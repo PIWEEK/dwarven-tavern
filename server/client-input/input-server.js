@@ -17,36 +17,38 @@ var InputServer = backbone.Model.extend({
     },
 
     initialize: function(port) {
-        this.port = port;
-        this.clients = [];
+        this.set("port", port);
         var self = this;
 
-        this.server = net.createServer(function(socket) {
+        this.set("server", net.createServer(function(socket) {
             console.log('New connection received!');
 
             var client = new Client(socket, self);
             self.addClient(client);
 
-            socket.on('data', _.bind(client.dataProcess, client));
+            socket.on('data', function(data) {
+                console.log('Emito evento');
+                self.get("emitter").emit('input-received', data, client);
+            });
             socket.on('end', _.bind(client.endConnection, client));
-        });
+        }));
     },
 
     start: function() {
         var self = this;
 
-        this.server.listen(this.port, function() {
-            console.log('Listening on ' + self.port + '...');
+        this.get("server").listen(this.get("port"), function() {
+            console.log('Listening on ' + self.get("port") + '...');
         });
     },
 
     addClient: function(client) {
-        this.clients.push(client);
-        console.log('>> New client: ' + this.clients);
+        this.get("clients").push(client);
+        console.log('>> New client: ' + this.get("clients"));
     },
 
     removeClient: function(client) {
-        this.clients = _.without(this.clients, client);
+        this.set("clients", _.without(this.clients, client));
     }
 
 });

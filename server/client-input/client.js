@@ -11,18 +11,13 @@ var Client = backbone.Model.extend({
     },
 
     initialize: function(soc, srv) {
-        this.socket = soc;
-        this.server = srv;
-    },
-
-    dataProcess: function(data) {
-        console.log('Received: ' + data);
-        this.socket.write(data);
+        this.set("socket", soc);
+        this.set("server", srv);
     },
 
     endConnection: function(socket) {
         console.log('bye!!\n');
-        this.server.removeClient(this);
+        this.get("server").removeClient(this);
     }
 
 });
