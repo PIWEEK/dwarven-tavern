@@ -23,7 +23,8 @@
     "dependencies": {
         "backbone": "1.0.0",
         "socket.io": "0.9.16",
-        "express": "3.3.4"
+        "express": "3.3.4",
+        "underscore": "1.5.1"
     },
     "license": "MIT"
 }
