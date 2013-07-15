@@ -5,6 +5,9 @@ app.grid = (function() {
     var getXYGrid = function(x, y) {
         var position = {};
 
+        x--;
+        y--;
+
         position.x = box_width * x;
         position.y = box_height * y;
 
