@@ -1,9 +1,9 @@
 "use strict";
 
-var backbone = require('backbone');
+var Backbone = require('backbone');
 
 
-var Client = backbone.Model.extend({
+var Client = Backbone.Model.extend({
 
     defaults: {
         socket: null,

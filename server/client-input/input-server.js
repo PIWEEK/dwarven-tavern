@@ -1,13 +1,13 @@
 "use strict";
 
 var net = require('net'),
-    backbone = require('backbone'),
+    Backbone = require('backbone'),
     _ = require('underscore'),
     Client = require('./client'),
     EventEmitter = require('events').EventEmitter;
 
 
-var InputServer = backbone.Model.extend({
+var InputServer = Backbone.Model.extend({
 
     defaults: {
         port: 9000,
