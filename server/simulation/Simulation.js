@@ -112,12 +112,13 @@ var Simulation = Backbone.Model.extend({
                 
             case BotAction.Directions.EAST:
             	newCoords.x += 1;
-                if (newCoords.x < 0) newCoords.x = 0;
+            	if (newCoords.x >= width) newCoords.x = width-1;
+                
                 break;
                 
             case BotAction.Directions.WEST:
             	newCoords.x -= 1;
-                if (newCoords.x >= width) newCoords.x = width-1;
+            	if (newCoords.x < 0) newCoords.x = 0;
                 break;
         }
         
@@ -175,12 +176,12 @@ var Simulation = Backbone.Model.extend({
 	            
 	        case BotAction.Directions.EAST:
 	        	newCoords.x += 1;
-	            if (newCoords.x < 1) newCoords.x = 1;
+	        	if (newCoords.x >= width-1) newCoords.x = width-2;	            
 	            break;
 	            
 	        case BotAction.Directions.WEST:
 	        	newCoords.x -= 1;
-	            if (newCoords.x >= width-1) newCoords.x = width-2;
+	            if (newCoords.x < 1) newCoords.x = 1;
 	            break;
 	    }
 	    
