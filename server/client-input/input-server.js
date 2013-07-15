@@ -16,14 +16,13 @@ var InputServer = Backbone.Model.extend({
         clients: []
     },
 
-    initialize: function(port) {
-        this.set("port", port);
+    initialize: function() {
         var self = this;
 
         this.set("server", net.createServer(function(socket) {
             console.log('New connection received!');
 
-            var client = new Client(socket, self);
+            var client = new Client({socket: socket, server: self});
             self.addClient(client);
 
             socket.on('data', function(data) {
