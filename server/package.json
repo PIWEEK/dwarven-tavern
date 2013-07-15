@@ -1,0 +1,25 @@
+{
+    "name": "dwarven-tabern",
+    "version": "0.0.1",
+    "description": "",
+    "contributors": [
+        {
+            "name": "Alonso Torres",
+            "email": "alonso.torres@kaleidos.net"
+        },
+        {
+            "name": "Juan Francisco Alcántara",
+            "email": "juanfran.alcantara@kaleidos.net"
+        },
+        {
+            "name": "Miguel de la Cruz",
+            "email": "miguel.delacruz@kaleidos.net"
+        }
+    ],
+    "dependencies": {
+        "backbone": "1.0.0",
+        "socket.io": "0.9.16",
+        "express": "3.3.4"
+    },
+    "license": "MIT"
+}
