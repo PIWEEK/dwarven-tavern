@@ -16,6 +16,10 @@
             "email": "miguel.delacruz@kaleidos.net"
         }
     ],
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/PIWEEK/dwarven-tavern"
+    },
     "dependencies": {
         "backbone": "1.0.0",
         "socket.io": "0.9.16",
