@@ -11,7 +11,17 @@ app.grid = (function() {
         return position;
     };
 
+    var getPosXY = function(x, y) {
+        var position = {};
+
+        position.x = x / box_width;
+        position.y = y / box_height;
+
+        return position;
+    };
+
     return {
-        getXYGrid: getXYGrid
+        getXYGrid: getXYGrid,
+        getPosXY: getPosXY
     }
 })();

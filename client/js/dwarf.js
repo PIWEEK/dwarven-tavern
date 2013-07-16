@@ -3,14 +3,14 @@
 
 app.dwarf = (function () {
     var dwarfAnimation = {
-        "top": [{ x: 0, y: 95, width: 29, height: 32}],
+        "top": [{ x: 0, y: 96, width: 29, height: 32}],
         "bottom": [{ x: 0, y: 0, width: 29, height: 32}],
         "left": [{ x: 0, y: 32, width: 29, height: 32}],
         "right": [{ x: 0, y: 64, width: 29, height: 32}],
         "walktop": [
-            { x: 0, y: 95, width: 29, height: 32},
-            { x: 33, y: 95, width: 29, height: 32},
-            { x: 66, y: 95, width: 29, height: 32}            
+            { x: 0, y: 96, width: 29, height: 32},
+            { x: 33, y: 96, width: 29, height: 32},
+            { x: 66, y: 96, width: 29, height: 32}            
         ],
         "walkbottom": [
             { x: 0, y: 0, width: 29, height: 32},
@@ -154,6 +154,7 @@ app.dwarf = (function () {
 
     return {
         init: initDwarfs,
-        move: moveDwarfs
+        move: moveDwarfs,
+        search: searchDwarf
     };
 })();

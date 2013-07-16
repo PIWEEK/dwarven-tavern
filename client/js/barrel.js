@@ -25,7 +25,12 @@ app.barrel = (function () {
         app.layer.add(barrel2);
     };
 
+    var moveBarrels = function(){
+        //app.api.getTeam1Barrel = 
+    };
+
     return {
-        init: initBarrels
+        init: initBarrels,
+        move: moveBarrels
     };
 })();
