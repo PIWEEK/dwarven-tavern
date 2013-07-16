@@ -427,8 +427,8 @@ if (require.main === module) {
     ]);
 
 //    console.log("\n\n####################################################################################\n\n");
-//    console.log(simulation.toString());
-    console.log(JSON.stringify(simulation.getCurrentState(), undefined, 2));
+    console.log(simulation.toString());
+//    console.log(JSON.stringify(simulation.getCurrentState(), undefined, 2));
     
 }
 

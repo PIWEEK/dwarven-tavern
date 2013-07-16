@@ -11,6 +11,7 @@ var Backbone = require("backbone"),
 var SimulationManager = Backbone.Model.extend({
     defaults: {
         simulations: {},
+        clients: {},
     },
     
     initialize: function() {
@@ -18,15 +19,16 @@ var SimulationManager = Backbone.Model.extend({
     },
     
     createSimulation: function() {
-        var uid = ""+ hat(32,28);
+        // var uid = ""+ hat(32,28);
+    	var uid = "6oojlb5";
         
         this.get("simulations")[uid] = new Simulation({
             width: this.get("width"),
             height: this.get("width"),
             lastId: 0,
-            playersConnected: 0
+            playersConnected: 0,
+            id: uid
         });
-        
         return uid;
     },
     
@@ -34,9 +36,13 @@ var SimulationManager = Backbone.Model.extend({
         var simulation = this.get("simulations")[uid],
             names = playerData.get("names"),
             playersConnected = simulation.get("playersConnected"),
-            lastId = simulation.get("lastId");
+            lastId = simulation.get("lastId"),
+            client = playerData.get("client"),
+            socket = client.get("socket");
         
         var positions = (playersConnected == 0)?this.get("positions").team1:this.get("positions").team2;
+        var player = (playersConnected == 0)?"player1":"player2";
+        
         var botsData = [];
         
         for(var i=0; i<names.length; i++) {
@@ -53,24 +59,36 @@ var SimulationManager = Backbone.Model.extend({
         
         simulation.set("playersConnected", playersConnected);
         simulation.set("lastId", lastId);
+        simulation.set(player, playerData);
+        
+    	var clientName = socket.remoteAddress + ":" + socket.remotePort;
+    	this.get("clients")[clientName] = uid;
         
         if(playersConnected == 2) {
             simulation.set("currentTurn", 0);
-            this.get("emitter").emit("simulation-ready", simulation.getCurrentState());
+            this.get("emitter").emit("simulation-ready", simulation);
         }
     },
     
-    sendTurn: function(uid, simulationTurn) {
-        var simulation = this.get("simulations")[uid];
+    sendTurn: function(client, simulationTurn) {
+        var simulation = this.getSimulationForClient(client);
+        console.log("++ Turn for simulation: " + simulation.get("id"));
         simulation.processTurn(simulationTurn.get("actions"));
         
         if(simulation.get("currentTurn") == 0) {
-            this.get("emitter").emit("team1-turn", simulation.getCurrentState());
+            this.get("emitter").emit("team1-turn", simulation);
             simulation.set("currentTurn", 1);
         } else {
-            this.get("emitter").emit("team2-turn", simulation.getCurrentState());
+            this.get("emitter").emit("team2-turn", simulation);
             simulation.set("currentTurn", 0);
         }
+    },
+    
+    getSimulationForClient: function(client) {
+    	var socket = client.get("socket");
+    	var clientName = socket.remoteAddress + ":" + socket.remotePort;
+    	var uid = this.get("clients")[clientName];
+    	return this.get("simulations")[uid];
     }
 });
 
