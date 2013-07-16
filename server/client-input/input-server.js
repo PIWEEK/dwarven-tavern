@@ -26,10 +26,12 @@ var InputServer = Backbone.Model.extend({
             self.addClient(client);
 
             socket.on('data', function(data) {
+                console.log('>> Data received: ' + data.toString());
                 try {
-                    var jsonContent = JSON.parse(data);
+                    var jsonContent = JSON.parse(data.toString());
                 } catch(err) {
                     console.log('##### PARSER ERROR #####');
+                    console.log(err);
                 }
 
                 if (typeof jsonContent !== 'undefined') self.get("emitter").emit('input-received', jsonContent, client);
@@ -49,7 +51,6 @@ var InputServer = Backbone.Model.extend({
 
     addClient: function(client) {
         this.get("clients").push(client);
-        console.log('>> New client: ' + this.get("clients"));
     },
 
     removeClient: function(client) {

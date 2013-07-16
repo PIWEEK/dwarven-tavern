@@ -11,7 +11,7 @@ var Client = Backbone.Model.extend({
     },
 
     endConnection: function(socket) {
-        console.log('bye!!\n');
+        console.log('Client Disconnected\n');
         this.get("server").removeClient(this);
     }
 
