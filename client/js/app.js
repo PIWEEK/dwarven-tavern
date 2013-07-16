@@ -1,16 +1,22 @@
-app.stage = new Kinetic.Stage({
-    container: "container",
-    width: 672,
-    height: 672
-});
+app.createGame = function() {
+    $("#container").show();
 
-app.layer = new Kinetic.Layer();
+    app.stage = new Kinetic.Stage({
+        container: "container",
+        width: 672,
+        height: 672
+    });
 
-app.loadImgs.done(function(){
-    app.barrel.init();
-    app.dwarf.init();
+    app.layer = new Kinetic.Layer();
 
-    app.stage.add(app.layer);
+    app.loadImgs().done(function(){
+        app.barrel.init();
+        app.dwarf.init();
 
-    app.play(0);
-});
+        app.stage.add(app.layer);
+
+        app.play(0);
+    });
+};
+
+

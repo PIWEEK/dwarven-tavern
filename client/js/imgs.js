@@ -6,7 +6,7 @@ app.imgs = [
 
 app.img = {};
 
-app.loadImgs = (function () {
+app.loadImgs = function () {
     var countLoaded = 0;
     var promise = $.Deferred();
 
@@ -29,4 +29,4 @@ app.loadImgs = (function () {
     }
 
     return promise;
-})();
+};

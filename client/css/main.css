@@ -3,6 +3,7 @@ body {
 }
 
 #container {
+    display: none;
     height: 672px;
     margin: 0 auto;
     width: 672px;
