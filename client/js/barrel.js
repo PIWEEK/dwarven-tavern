@@ -1,36 +1,97 @@
 app.barrel = (function () {
-    var defaultBarrel = {
-        width: 32,
-        height: 32
+    var barrelAnimation = {
+        "vertical": [{ x: 0, y: 0, width: 32, height: 32}],
+        "horizontal": [{ x: 32, y: 0, width: 32, height: 32}],
     };
+
+    var barrelTeam1 = {};
+    var barrelTeam2 = {};
+
+    var createBarrelSprite = function(x, y){
+        return new Kinetic.Sprite({
+            x: x,
+            y: y,
+            image: app.img.barrel,
+            width: 32,
+            height: 32,
+            animation: "vertical",
+            animations: barrelAnimation
+        });
+    };
+
+    var initBarrelTeam1 = function(){
+        barrelTeam1.x = Math.round(app.width/2 + 2);
+        barrelTeam1.y = Math.round(app.height/2);
+
+        var position = app.grid.getXYGrid(barrelTeam1.x,  barrelTeam1.y);
+
+        barrelTeam1.sprite = createBarrelSprite(position.x, position.y);
+        
+        app.layer.add(barrelTeam1.sprite);
+        barrelTeam1.sprite.start();
+    };
+
+    var initBarrelTeam2 = function(){
+        barrelTeam2.x = Math.round(app.width/2 - 2);
+        barrelTeam2.y = Math.round(app.height/2);
+
+        position = app.grid.getXYGrid(barrelTeam2.x,  barrelTeam2.y);
+
+        barrelTeam2.sprite = createBarrelSprite(position.x, position.y);
+        
+        app.layer.add(barrelTeam2.sprite);
+        barrelTeam2.sprite.start();
+    }
 
     var initBarrels = function(){
-        var barrel = new Kinetic.Image({
-            x: app.grid.getXYGrid(app.width/2 + 2, app.height/2).x,
-            y: app.grid.getXYGrid(app.width/2, app.height/2).y,
-            image: app.img.barrel,
-            width: 32,
-            height: 32
-        });
-
-        var barrel2 = new Kinetic.Image({
-            x: app.grid.getXYGrid(app.width/2 - 2, app.height/2).x,
-            y: app.grid.getXYGrid(app.width/2, app.height/2).y,
-            image: app.img.barrel,
-            width: 32,
-            height: 32
-        });
-
-        app.layer.add(barrel);
-        app.layer.add(barrel2);
+        initBarrelTeam1();
+        initBarrelTeam2();
     };
 
+    var moveBarrel = function(position, barrel){
+        if(barrel.x !== position.x) {
+            barrel.sprite.setAnimation("vertical");
+        }else if(barrel.y !== position.y) {
+            barrel.sprite.setAnimation("horizontal");
+        }
+
+        var newPosition = app.grid.getXYGrid(position.x, position.y);
+
+        var tween = new Kinetic.Tween({
+            node: barrel.sprite, 
+            duration: 0.3,
+            x: newPosition.x,
+            y: newPosition.y
+        });
+
+        tween.play();
+    };
+
+    var moveTeam1Barrels = function(){
+        var barrel = app.api.getTeam1Barrel();
+        moveBarrel(barrel, barrelTeam1);
+        
+        barrelTeam1.x = barrel.x;
+        barrelTeam1.y = barrel.y;
+    };
+
+    var moveTeam2Barrels = function(){
+        var barrel = app.api.getTeam2Barrel();
+        moveBarrel(barrel, barrelTeam2);
+        
+        barrelTeam2.x = barrel.x;
+        barrelTeam2.y = barrel.y;
+    }
+
     var moveBarrels = function(){
-        //app.api.getTeam1Barrel = 
+        moveTeam1Barrels();
+        moveTeam2Barrels();
     };
 
     return {
         init: initBarrels,
-        move: moveBarrels
+        move: moveBarrels,
+        team1: barrelTeam1,
+        team2: barrelTeam2
     };
 })();
