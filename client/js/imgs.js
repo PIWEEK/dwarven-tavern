@@ -18,14 +18,14 @@ app.loadImgs = (function () {
         }
     };
 
-    var createImg = function(key){
+    var createImg = function(key, url){
         app.img[key] = new Image();
-        app.img[key].src = 'imgs/barrel.png';
+        app.img[key].src = url;
         app.img[key].onload = onload;
     };
 
     for(var i = 0; i < app.imgs.length; i++) {
-        createImg(app.imgs[i].key);
+        createImg(app.imgs[i].key, app.imgs[i].url);
     }
 
     return promise;
