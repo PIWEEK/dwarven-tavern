@@ -81,10 +81,24 @@ app.dwarf = (function () {
         app.history.team2 = dwarfsTeam2;
     };
 
-    var moveDward = function(id, direction) {
-        var dwarf = searchDwarf(id);
+    var moveDward = function(dwarfNew, direction) {
+        var dwarf = searchDwarf(dwarfNew.id);
 
-        dwarf.sprite.setAnimation("walk"+direction);
+        dwarf.sprite.setAnimation("walk" + direction);;
+
+        var newPosition = app.grid.getXYGrid(dwarfNew.x, dwarfNew.y);
+
+        var tween = new Kinetic.Tween({
+            node: dwarf.sprite, 
+            duration: 0.3,
+            x: newPosition.x,
+            y: newPosition.y,
+            onFinish: function() {
+                dwarf.sprite.setAnimation(direction);
+            }
+        });
+
+        tween.play();
     };
 
     var updateDwarf = function(dwarf, teamHistory) {
@@ -92,15 +106,15 @@ app.dwarf = (function () {
             if(dwarf.id === teamHistory[z].id) {
                 if(dwarf.x !== teamHistory[z].x){
                     if(teamHistory[z].x > dwarf.x) {
-                        moveDward(dwarf.id, "right");
+                        moveDward(dwarf, "left");
                     }else {
-                        moveDward(dwarf.id, "left");
+                        moveDward(dwarf, "right");
                     }
                 }else if (dwarf.y !== teamHistory[z].y){
                     if(teamHistory[z].y > dwarf.y) {
-                        moveDward(dwarf.id, "top");
+                        moveDward(dwarf, "top");
                     }else if(teamHistory[z].y < dwarf.y) {
-                        moveDward(dwarf.id, "bottom");
+                        moveDward(dwarf, "bottom");
                     }
                 }
             }

@@ -45,8 +45,8 @@ app.api.getTeam2Dwafs = function(){
             {id: 6, x: 20, y: 1},
             {id: 7, x: 19, y: 1},
             {id: 8, x: 18, y: 1},
-            {id: 9, x: 17, y: 1},
-            {id: 10, x: 16, y: 1}
+            {id: 9, x: 18, y: 0},
+            {id: 10, x: 15, y: 0}
         ];
     }
 };
