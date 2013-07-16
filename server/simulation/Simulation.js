@@ -2,29 +2,15 @@
 
 var Backbone = require("backbone"),
     _ = require("underscore"),
-    BotAction = require("./BotAction");
+    BotAction = require("./BotAction"),
+    BotData = require("./BotData"),
+    BarrelData = require("./BarrelData");
 
 var GridCellState = {
    EMPTY: 0,
    BOT: 1,
    BARREL: 2
 };
-
-var BotData = Backbone.Model.extend({
-    defaults: {
-        id: 0,
-        name: "",
-        coords: { x: 0, y: 0 },
-        team: 0
-    }
-});
-
-var BarrelData = Backbone.Model.extend({
-    defaults: {
-        team: 0,
-        coords: { x: 0, y: 0 }
-    }
-});
 
 var Simulation = Backbone.Model.extend({
     defaults: {
@@ -61,7 +47,6 @@ var Simulation = Backbone.Model.extend({
         
         _.each(actions, function(botAction){
             if (botAction.get("type") === BotAction.Types.MOVE) {
-                
                 if(bots[botAction.get("botId")]) {
                     self.moveBot(bots[botAction.get("botId")], botAction.get("direction"));
                 } 
@@ -101,18 +86,18 @@ var Simulation = Backbone.Model.extend({
         var barrels = this.get("barrels"),
             bots = this.get("bots");
         
-        var team0 = [], team1 = [];
+        var team1 = [], team2 = [];
         _.each(bots, function(botData){
             if(botData.get("team") == 0) {
-                team0.push(botData);
-            } else  {
                 team1.push(botData);
+            } else  {
+                team2.push(botData);
             }
         });
         var result = {
            barrels: barrels,
-           team0: team0,
            team1: team1,
+           team2: team2,
         };
         return result;
     },
