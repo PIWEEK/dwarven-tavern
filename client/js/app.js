@@ -11,4 +11,6 @@ app.loadImgs.done(function(){
     app.dwarf.init();
 
     app.stage.add(app.layer);
+
+    app.play(0);
 });
