@@ -34,7 +34,7 @@ var InputServer = Backbone.Model.extend({
                     console.log(err);
                 }
 
-                if (typeof jsonContent !== 'undefined') self.get("emitter").emit('input-received', jsonContent, client);
+                if (typeof jsonContent !== 'undefined') self.get("emitter").emit('turn-received', jsonContent, client);
             });
 
             socket.on('end', _.bind(client.endConnection, client));

@@ -32,20 +32,19 @@ var SimulationTurn = Backbone.Model.extend({
     },
 
     valid: function() {
-        // Para que un turno sea válido:
-        //  - playerId
-        //  - actionsWith:
-        //    - botId
-        //    - type
-        //    - direction
         var valid = true;
 
-        if (!this.playerId)
+        if (!this.get("playerId"))
             valid = false;
 
-        _.each(this.actions, function(action) {
-            //if (!action.botId &&
+        _.each(this.get("actions"), function(action) {
+            if ( !(action.get("botId") && action.get("type") && action.get("direction")) &&
+                 !(action.get("botId") && action.get("type") == "PASS") ) {
+                valid = false;
+            }
         });
+
+        return valid;
     }
 });
 

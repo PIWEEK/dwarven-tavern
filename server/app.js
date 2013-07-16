@@ -6,11 +6,16 @@ var _ = require("underscore"),
 
 var inputServer = new InputServer({port: 9000});
 
-inputServer.get("emitter").on("input-received", function(jsonContent, sourceClient) {
+inputServer.get("emitter").on("turn-received", function(jsonContent, sourceClient) {
     var simulationTurn = new SimulationTurn({jsonContent: jsonContent});
+    if (simulationTurn.valid()) {
+        console.log('  ++ Turno válido ++');
+    } else {
+        console.log('  -- Turno inválido --');
+    }
 });
 
-inputServer.get("emitter").on('malformed-input', function(client) {
+inputServer.get("emitter").on('turn-malformed', function(client) {
     // Send client malformed input message
 });
 
