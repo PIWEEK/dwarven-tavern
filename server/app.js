@@ -1,21 +1,27 @@
 "use strict";
 
-var _ = require("underscore");
+var _ = require("underscore"),
+    InputServer = require("./client-input/input-server"),
+    SimulationTurn = require('./simulation/SimulationTurn');
 
-var InputServer = require("./client-input/input-server");
+var inputServer = new InputServer({port: 9000});
 
-var inputServer = new InputServer(9000);
-
-inputServer.get("emitter").on("input-received", function(action, sourceClient) {
-    console.log('Evento input-received');
-    var clients = inputServer.get("clients");
-    _.each(clients, function(targetClient){
-        if(sourceClient !== targetClient) {
-            targetClient.get("socket").write(action);
-        }
-    });
+inputServer.get("emitter").on("turn-received", function(jsonContent, sourceClient) {
+    var simulationTurn = new SimulationTurn({jsonContent: jsonContent});
+    if (simulationTurn.valid()) {
+        console.log('++ Turno válido');
+        var response = '{"type": "ok", "message": "Valid turn"}\n';
+        sourceClient.get("socket").write(response);
+    } else {
+        console.log('-- Turno inválido');
+        inputServer.get("emitter").emit('turn-malformed', sourceClient);
+    }
 });
 
-inputServer.get("emitter").emit("input-received");
+inputServer.get("emitter").on('turn-malformed', function(client) {
+    var response = '{"type": "error", "message": "Invalid turn"}\n';
+
+    client.get("socket").write(response);
+});
 
 inputServer.start();

@@ -12,24 +12,38 @@ var InputServer = Backbone.Model.extend({
     defaults: {
         port: 9000,
         server: null,
-        emitter: new EventEmitter(),
-        clients: []
+        emitter: null,
+        clients: null
     },
 
-    initialize: function(port) {
-        this.set("port", port);
+    initialize: function() {
         var self = this;
+        this.set("emitter", new EventEmitter());
+        this.set("clients", []);
 
         this.set("server", net.createServer(function(socket) {
-            console.log('New connection received!');
+            console.log('++ New connection received!');
 
-            var client = new Client(socket, self);
+            var client = new Client({socket: socket, server: self});
             self.addClient(client);
 
             socket.on('data', function(data) {
-                console.log('Emito evento');
-                self.get("emitter").emit('input-received', data, client);
+                try {
+                    var jsonContent = JSON.parse(data.toString());
+                } catch(err) {
+                    console.log('-- Input malformed');
+                    console.log('- ' + err);
+                    socket.emit('input-malformed', socket);
+                }
+
+                if (typeof jsonContent !== 'undefined') self.get("emitter").emit('turn-received', jsonContent, client);
             });
+
+            socket.on('input-malformed', function(socket) {
+                var response = '{"type": "error", "message": "Invalid JSON"}\n';
+                socket.write(response);
+            });
+
             socket.on('end', _.bind(client.endConnection, client));
         }));
     },
@@ -38,13 +52,12 @@ var InputServer = Backbone.Model.extend({
         var self = this;
 
         this.get("server").listen(this.get("port"), function() {
-            console.log('Listening on ' + self.get("port") + '...');
+            console.log('===== Server started! =====\n++ Listening on ' + self.get("port") + '...');
         });
     },
 
     addClient: function(client) {
         this.get("clients").push(client);
-        console.log('>> New client: ' + this.get("clients"));
     },
 
     removeClient: function(client) {
