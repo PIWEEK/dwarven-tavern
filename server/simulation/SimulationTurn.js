@@ -6,7 +6,7 @@ var SimulationTurn = Backbone.Model.extend({
     defaults: {
         jsonContent: {},
         playerId: null,
-        actions: []
+        actions: null
     },
 
     initialize: function() {
