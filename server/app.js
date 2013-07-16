@@ -10,7 +10,7 @@ inputServer.get("emitter").on("turn-received", function(jsonContent, sourceClien
     var simulationTurn = new SimulationTurn({jsonContent: jsonContent});
     if (simulationTurn.valid()) {
         console.log('++ Turno válido');
-        var response = '{"message": "Valid turn"}\n';
+        var response = '{"type": "ok", "message": "Valid turn"}\n';
         sourceClient.get("socket").write(response);
     } else {
         console.log('-- Turno inválido');
@@ -19,7 +19,7 @@ inputServer.get("emitter").on("turn-received", function(jsonContent, sourceClien
 });
 
 inputServer.get("emitter").on('turn-malformed', function(client) {
-    var response = '{"message": "Invalid turn"}\n';
+    var response = '{"type": "error", "message": "Invalid turn"}\n';
 
     client.get("socket").write(response);
 });

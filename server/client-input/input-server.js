@@ -32,7 +32,7 @@ var InputServer = Backbone.Model.extend({
                     var jsonContent = JSON.parse(data.toString());
                 } catch(err) {
                     console.log('-- Input malformed');
-                    console.log('- ' + err + '\n----');
+                    console.log('- ' + err);
                     socket.emit('input-malformed', socket);
                 }
 
@@ -40,7 +40,7 @@ var InputServer = Backbone.Model.extend({
             });
 
             socket.on('input-malformed', function(socket) {
-                var response = '{"message": "Invalid JSON"}\n';
+                var response = '{"type": "error", "message": "Invalid JSON"}\n';
                 socket.write(response);
             });
 
