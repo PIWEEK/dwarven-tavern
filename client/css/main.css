@@ -3,9 +3,9 @@ body {
 }
 
 #container {
-    height: 640px;
+    height: 672px;
     margin: 0 auto;
-    width: 640px;
+    width: 672px;
     background: url("../imgs/ground.png");
     background-size: 55px;
 }

@@ -1,3 +1,3 @@
 var app = {};
-app.width = 20;
-app.height = 20;
+app.width = 21;
+app.height = 21;
