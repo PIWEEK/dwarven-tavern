@@ -12,12 +12,14 @@ var InputServer = Backbone.Model.extend({
     defaults: {
         port: 9000,
         server: null,
-        emitter: new EventEmitter(),
-        clients: []
+        emitter: null,
+        clients: null
     },
 
     initialize: function() {
         var self = this;
+        this.set("emitter", new EventEmitter());
+        this.set("clients", []);
 
         this.set("server", net.createServer(function(socket) {
             console.log('New connection received!');
