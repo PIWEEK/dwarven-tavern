@@ -6,7 +6,6 @@ var net = require('net'),
     Client = require('./Client'),
     EventEmitter = require('events').EventEmitter;
 
-
 var InputServer = Backbone.Model.extend({
 
     defaults: {
@@ -30,13 +29,12 @@ var InputServer = Backbone.Model.extend({
             socket.on('data', function(data) {
                 try {
                     var jsonContent = JSON.parse(data.toString());
+                    self.get("emitter").emit('turn-received', jsonContent, client);
                 } catch(err) {
                     console.log('-- Input malformed');
                     console.log('- ' + err);
                     socket.emit('input-malformed', socket);
                 }
-
-                if (typeof jsonContent !== 'undefined') self.get("emitter").emit('turn-received', jsonContent, client);
             });
 
             socket.on('input-malformed', function(socket) {
