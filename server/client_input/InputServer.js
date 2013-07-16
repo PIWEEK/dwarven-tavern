@@ -3,7 +3,7 @@
 var net = require('net'),
     Backbone = require('backbone'),
     _ = require('underscore'),
-    Client = require('./client'),
+    Client = require('./Client'),
     EventEmitter = require('events').EventEmitter;
 
 

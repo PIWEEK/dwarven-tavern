@@ -2,11 +2,11 @@
 
 var config = {
     port: 9000,
-    
+
     width: 21,
     height: 21,
     botsPerPlayer: 5,
-    
+
     positions: {
         team1: {
             barrel: {x: 8, y: 9},
@@ -20,7 +20,7 @@ var config = {
 };
 
 var _ = require("underscore"),
-    InputServer = require("./client-input/input-server"),
+    InputServer = require("./client_input/InputServer"),
     SimulationManager = require("./simulation/SimulationManager"),
     SimulationTurn = require('./simulation/SimulationTurn');
 
