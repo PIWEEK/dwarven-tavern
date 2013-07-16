@@ -42,13 +42,17 @@ var Simulation = Backbone.Model.extend({
         this.set("grid", grid);
     },
     
-    processTurn: function(team, actions) {
+    processTurn: function(actions) {
         var bots = this.get("bots");
         var self = this;
         
         _.each(actions, function(botAction){
             if (botAction.get("type") === BotAction.Types.MOVE) {
-            	self.moveBot(bots[botAction.get("botId")], botAction.get("direction"));
+                
+                if(bots[botAction.get("botId")]) {
+                    console.log("Moving: " + botAction.get("botId"));
+                    self.moveBot(bots[botAction.get("botId")], botAction.get("direction"));
+                } 
             }
         });
     },
@@ -90,35 +94,35 @@ var Simulation = Backbone.Model.extend({
     },
     
     moveBot: function(botData, direction) {
-    	var grid = this.get("grid"), 
-    		width = this.get("width"), 
-    		height = this.get("height"),
-    		teamId = botData.get("team"),
-        	botId = botData.get("id");
-    	
+        var grid = this.get("grid"), 
+            width = this.get("width"), 
+            height = this.get("height"),
+            teamId = botData.get("team"),
+            botId = botData.get("id");
+        
         var oldCoords = botData.get("coords"),
-        	newCoords = { x: oldCoords.x, y: oldCoords.y };
+            newCoords = { x: oldCoords.x, y: oldCoords.y };
         
         switch(direction) {
             case BotAction.Directions.NORTH:
-            	newCoords.y -= 1;
-                if (botData.get("coords").y < 0) newCoords.y = 0;
+                newCoords.y -= 1;
+                if (newCoords.y < 0) newCoords.y = 0;
                 break;
                 
             case BotAction.Directions.SOUTH:
-            	newCoords.y += 1;
+                newCoords.y += 1;
                 if (newCoords.y >= height) newCoords.y = height-1;
                 break;
                 
             case BotAction.Directions.EAST:
-            	newCoords.x += 1;
-            	if (newCoords.x >= width) newCoords.x = width-1;
+                newCoords.x += 1;
+                if (newCoords.x >= width) newCoords.x = width-1;
                 
                 break;
                 
             case BotAction.Directions.WEST:
-            	newCoords.x -= 1;
-            	if (newCoords.x < 0) newCoords.x = 0;
+                newCoords.x -= 1;
+                if (newCoords.x < 0) newCoords.x = 0;
                 break;
         }
         
@@ -126,28 +130,28 @@ var Simulation = Backbone.Model.extend({
         
         // We empty the old grid data
         grid[oldCoords.y][oldCoords.x] = { 
-        	state: GridCellState.EMPTY 
+            state: GridCellState.EMPTY 
         };
         
         if(grid[newCoords.y][newCoords.x].state == GridCellState.EMPTY) {
-	        // We put the new data on the related grid
-	        grid[newCoords.y][newCoords.x] = { 
-	            state: GridCellState.BOT, 
-	            team: teamId,
-	            botId: botId
-	        };
+            // We put the new data on the related grid
+            grid[newCoords.y][newCoords.x] = { 
+                state: GridCellState.BOT, 
+                team: teamId,
+                botId: botId
+            };
         } else if(grid[newCoords.y][newCoords.x].state == GridCellState.BARREL){
-        	this.moveBarrel(newCoords, direction);
-        	
-        	if(grid[newCoords.y][newCoords.x].state == GridCellState.BARREL){
-        		// If we are unable to move the barrel, we stay in the same coord
-        		newCoords = oldCoords;
-        	} 
-    		grid[newCoords.y][newCoords.x] = { 
-	            state: GridCellState.BOT, 
-	            team: teamId,
-	            botId: botId
-	        };
+            this.moveBarrel(newCoords, direction);
+            
+            if(grid[newCoords.y][newCoords.x].state != GridCellState.EMPTY){
+                // If we are unable to move the barrel, we stay in the same coord
+                newCoords = oldCoords;
+            } 
+            grid[newCoords.y][newCoords.x] = { 
+                state: GridCellState.BOT, 
+                team: teamId,
+                botId: botId
+            };
 
         }
         
@@ -156,44 +160,136 @@ var Simulation = Backbone.Model.extend({
     },
     
     moveBarrel: function(barrelCoords, direction) {
-    	var grid = this.get("grid"), 
-			width = this.get("width"), 
-			height = this.get("height"),
-			oldCoords = barrelCoords,
-    		newCoords = { x: oldCoords.x, y: oldCoords.y },
-    		teamId = grid[oldCoords.y][oldCoords.x].team;
+        var grid = this.get("grid"), 
+            width = this.get("width"), 
+            height = this.get("height"),
+            bots = this.get("bots"),
+            oldCoords = barrelCoords,
+            newCoords = { x: oldCoords.x, y: oldCoords.y },
+            teamId = grid[oldCoords.y][oldCoords.x].team;
     
-	    switch(direction) {
-	        case BotAction.Directions.NORTH:
-	        	newCoords.y -= 1;
-	            if (botData.get("coords").y < 1) newCoords.y = 1;
-	            break;
-	            
-	        case BotAction.Directions.SOUTH:
-	        	newCoords.y += 1;
-	            if (newCoords.y >= height-1) newCoords.y = height-2;
-	            break;
-	            
-	        case BotAction.Directions.EAST:
-	        	newCoords.x += 1;
-	        	if (newCoords.x >= width-1) newCoords.x = width-2;	            
-	            break;
-	            
-	        case BotAction.Directions.WEST:
-	        	newCoords.x -= 1;
-	            if (newCoords.x < 1) newCoords.x = 1;
-	            break;
-	    }
-	    
-	    grid[oldCoords.y][oldCoords.x] = { state: GridCellState.EMPTY };
-	    grid[newCoords.y][newCoords.x] = { state: GridCellState.BARREL, team: teamId };
+        switch(direction) {
+            case BotAction.Directions.NORTH:
+                newCoords.y -= 1;
+                if (newCoords.y < 0) newCoords.y = 0;
+                break;
+                
+            case BotAction.Directions.SOUTH:
+                newCoords.y += 1;
+                if (newCoords.y >= height) newCoords.y = height-1;
+                break;
+                
+            case BotAction.Directions.EAST:
+                newCoords.x += 1;
+                if (newCoords.x >= width) newCoords.x = width-1;
+                
+                break;
+                
+            case BotAction.Directions.WEST:
+                newCoords.x -= 1;
+                if (newCoords.x < 0) newCoords.x = 0;
+                break;
+        }
+        
+        grid[oldCoords.y][oldCoords.x] = { state: GridCellState.EMPTY };
+        if(grid[newCoords.y][newCoords.x].state == GridCellState.EMPTY) {
+            grid[newCoords.y][newCoords.x] = { state: GridCellState.BARREL, team: teamId };
+        } else if(grid[newCoords.y][newCoords.x].state == GridCellState.BARREL) {
+            grid[oldCoords.y][oldCoords.x] = { state: GridCellState.BARREL, team: teamId };
+        } else if(grid[newCoords.y][newCoords.x].state == GridCellState.BOT) {
+            this.hitBot(bots[grid[newCoords.y][newCoords.x].botId], direction);
+            
+            if(grid[newCoords.y][newCoords.x].state != GridCellState.EMPTY){
+                // If we are unable to "clean" de space, we stay where we were
+                newCoords = oldCoords;
+            } 
+            grid[newCoords.y][newCoords.x] = { 
+                state: GridCellState.BARREL, 
+                team: teamId
+            };
+        }
+    },
+    
+    hitBot: function(botData, direction) {
+        var grid = this.get("grid"), 
+            width = this.get("width"), 
+            height = this.get("height"),
+            teamId = botData.get("team"),
+            botId = botData.get("id");
+        
+        var oldCoords = botData.get("coords"),
+            newCoords = { x: oldCoords.x, y: oldCoords.y };
+        
+        var kindOfHit = Math.floor(Math.random()*3);
+        console.log("HIT: " + kindOfHit);
+    
+        switch(direction) {
+            case BotAction.Directions.NORTH:
+                newCoords.y -= 1;
+                if(kindOfHit == 0) { newCoords.x -= 1; } 
+                else if (kindOfHit == 1) { newCoords.y -= 1; } 
+                else { newCoords.x += 1; }
+                break;
+                
+            case BotAction.Directions.SOUTH:
+                newCoords.y += 1;
+                if(kindOfHit == 0) { newCoords.x -= 1; } 
+                else if (kindOfHit == 1) { newCoords.y += 1; } 
+                else { newCoords.x += 1; }
+                break;
+                
+            case BotAction.Directions.EAST:
+                newCoords.x += 1;
+                if(kindOfHit == 0) { newCoords.y -= 1; } 
+                else if (kindOfHit == 1) { newCoords.x += 1; } 
+                else { newCoords.y += 1; }
+                break;
+                
+            case BotAction.Directions.WEST:
+                newCoords.x -= 1;
+                if(kindOfHit == 0) { newCoords.y -= 1; } 
+                else if (kindOfHit == 1) { newCoords.x -= 1; } 
+                else { newCoords.y += 1; }
+                break;
+        }
+        
+        if (newCoords.y < 0) newCoords.y = 0;
+        if (newCoords.y >= height-1) newCoords.y = height-2;
+        if (newCoords.x >= width-1) newCoords.x = width-2;                
+        if (newCoords.x < 1) newCoords.x = 1;
+        
+        grid[oldCoords.y][oldCoords.x] = { state: GridCellState.EMPTY };
+        
+        if(grid[newCoords.y][newCoords.x].state == GridCellState.EMPTY) {
+            // We put the new data on the related grid
+            grid[newCoords.y][newCoords.x] = { 
+                state: GridCellState.BOT, 
+                team: teamId,
+                botId: botId
+            };
+        } else if(grid[newCoords.y][newCoords.x].state == GridCellState.BARREL){
+            this.moveBarrel(newCoords, direction);
+            
+            if(grid[newCoords.y][newCoords.x].state != GridCellState.EMPTY){
+                // If we are unable to move the barrel, we stay in the same coord
+                newCoords = oldCoords;
+            } 
+            grid[newCoords.y][newCoords.x] = { 
+                state: GridCellState.BOT, 
+                team: teamId,
+                botId: botId
+            };
+        }
+        
+        // Update the bot data with the new coords
+        botData.set("coords", newCoords);
     }
 });
 
 if (require.main === module) {
     var simulation = new Simulation({width: 21, height: 21});
     
-    simulation.setTeam(0, {x: 8, y: 9}, [
+    simulation.setTeam(0, {x: 8, y: 9}, [/*
         new BotData({
             id: 1,
             name: "Rhun Diamondfighter",
@@ -223,10 +319,10 @@ if (require.main === module) {
             name: "Riagan Rubygold",
             coords: { x: 16, y: 18 },
             life : 10
-        })
+        })*/
     ]);
     
-    simulation.setTeam(1, {x: 11, y: 9}, [
+    simulation.setTeam(1, {x: 11, y: 9}, [/*
         new BotData({
             id: 6,
             name: "Keenon Bismuth-Fulvous",
@@ -246,48 +342,48 @@ if (require.main === module) {
             life : 10
         }),
         new BotData({
-        	id: 9,
+            id: 9,
             name: "Tadd Talchief",
             coords: { x: 13, y: 2 },
             life : 10
         }),
         new BotData({
-        	id: 10,
+            id: 10,
             name: "Ceithin Feldspardigger",
             coords: { x: 16, y: 2 },
             life : 10
-        }),
+        }),*/
         new BotData({
-        	id: 99,
+            id: 98,
             name: "Fulanito de tal",
             coords: { x: 8, y: 8 },
+            life : 10
+        }),
+        new BotData({
+            id: 99,
+            name: "Fulanito de tal II",
+            coords: { x: 8, y: 10 },
             life : 10
         })
     ]);
     console.log(simulation.currentState());
     
-    simulation.processTurn(0, [
+    simulation.processTurn([
         new BotAction({botId: 1, type: BotAction.Types.MOVE, direction: BotAction.Directions.NORTH}),
         new BotAction({botId: 2, type: BotAction.Types.MOVE, direction: BotAction.Directions.EAST}),
         new BotAction({botId: 3, type: BotAction.Types.MOVE, direction: BotAction.Directions.WEST}),
         new BotAction({botId: 4, type: BotAction.Types.MOVE, direction: BotAction.Directions.SOUTH}),
         new BotAction({botId: 5, type: BotAction.Types.MOVE, direction: BotAction.Directions.NORTH}),
+        new BotAction({botId: 6, type: BotAction.Types.MOVE, direction: BotAction.Directions.SOUTH}),
+        new BotAction({botId: 7, type: BotAction.Types.MOVE, direction: BotAction.Directions.EAST}),
+        new BotAction({botId: 8, type: BotAction.Types.MOVE, direction: BotAction.Directions.WEST}),
+        new BotAction({botId: 9, type: BotAction.Types.MOVE, direction: BotAction.Directions.NORTH}),
+        new BotAction({botId: 10, type: BotAction.Types.MOVE, direction: BotAction.Directions.SOUTH}),
+        
+        new BotAction({botId: 98, type: BotAction.Types.MOVE, direction: BotAction.Directions.SOUTH}),
+//        new BotAction({botId: 99, type: BotAction.Types.MOVE, direction: BotAction.Directions.SOUTH}),
+//        new BotAction({botId: 99, type: BotAction.Types.MOVE, direction: BotAction.Directions.SOUTH}),
     ]);
-
-    console.log("\n\n####################################################################################\n\n");
-    console.log(simulation.currentState());
-
-    simulation.processTurn(1, [
-       new BotAction({botId: 6, type: BotAction.Types.MOVE, direction: BotAction.Directions.SOUTH}),
-       new BotAction({botId: 7, type: BotAction.Types.MOVE, direction: BotAction.Directions.EAST}),
-       new BotAction({botId: 8, type: BotAction.Types.MOVE, direction: BotAction.Directions.WEST}),
-       new BotAction({botId: 9, type: BotAction.Types.MOVE, direction: BotAction.Directions.NORTH}),
-       new BotAction({botId: 10, type: BotAction.Types.MOVE, direction: BotAction.Directions.SOUTH}),
-       
-       new BotAction({botId: 99, type: BotAction.Types.MOVE, direction: BotAction.Directions.SOUTH}),
-       new BotAction({botId: 99, type: BotAction.Types.MOVE, direction: BotAction.Directions.SOUTH}),
-       new BotAction({botId: 99, type: BotAction.Types.MOVE, direction: BotAction.Directions.SOUTH}),
-   ]);
 
     console.log("\n\n####################################################################################\n\n");
     console.log(simulation.currentState());
