@@ -22,21 +22,26 @@ var InputServer = Backbone.Model.extend({
         this.set("clients", []);
 
         this.set("server", net.createServer(function(socket) {
-            console.log('New connection received!');
+            console.log('++ New connection received!');
 
             var client = new Client({socket: socket, server: self});
             self.addClient(client);
 
             socket.on('data', function(data) {
-                console.log('>> Data received: ' + data.toString());
                 try {
                     var jsonContent = JSON.parse(data.toString());
                 } catch(err) {
-                    console.log('##### PARSER ERROR #####');
-                    console.log(err);
+                    console.log('-- Input malformed');
+                    console.log('- ' + err + '\n----');
+                    socket.emit('input-malformed', socket);
                 }
 
                 if (typeof jsonContent !== 'undefined') self.get("emitter").emit('turn-received', jsonContent, client);
+            });
+
+            socket.on('input-malformed', function(socket) {
+                var response = '{"message": "Invalid JSON"}\n';
+                socket.write(response);
             });
 
             socket.on('end', _.bind(client.endConnection, client));
@@ -47,7 +52,7 @@ var InputServer = Backbone.Model.extend({
         var self = this;
 
         this.get("server").listen(this.get("port"), function() {
-            console.log('Listening on ' + self.get("port") + '...');
+            console.log('===== Server started! =====\n++ Listening on ' + self.get("port") + '...');
         });
     },
 
