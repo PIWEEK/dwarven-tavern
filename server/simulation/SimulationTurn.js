@@ -10,7 +10,7 @@ var SimulationTurn = Backbone.Model.extend({
     },
 
     initialize: function() {
-        console.log('object actions ' + this.get("actions"));
+        this.set("actions", []);
         this.set("playerId", this.get("jsonContent").playerId);
 
         this.buildActions(this.get("jsonContent").actions);
@@ -26,9 +26,6 @@ var SimulationTurn = Backbone.Model.extend({
                 direction: action.direction
             }));
         });
-
-        console.log('>> Acciones creadas');
-        console.log(self.get("actions"));
     },
 
     valid: function() {
