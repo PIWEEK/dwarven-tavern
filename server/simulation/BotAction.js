@@ -1,7 +1,8 @@
 var Backbone = require('backbone');
 
 var BotActionTypes = {
-    MOVE: 0
+    MOVE: 0,
+    PASS: 1
 };
 
 var BotActionDirections = {
