@@ -31,7 +31,7 @@ var SimulationTurn = Backbone.Model.extend({
     valid: function() {
         var valid = true;
 
-        if (!this.get("playerId"))
+        if (!this.get("playerId") || _.isEmpty(this.get("actions")))
             valid = false;
 
         _.each(this.get("actions"), function(action) {
