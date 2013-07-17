@@ -29,9 +29,22 @@ var InputServer = Backbone.Model.extend({
             socket.on('data', function(data) {
                 try {
                     var jsonContent = JSON.parse(data.toString());
-                    self.get("emitter").emit('turn-received', jsonContent, client);
+                    if(!jsonContent['type']) {
+                        socket.emit('input-malformed', socket);
+                    } else {
+                        if("create-simulation" == jsonContent['type']) {
+                            self.get("emitter").emit('create-simulation', jsonContent, client);
+                        } else if("join-simulation" == jsonContent['type']) {
+                            self.get("emitter").emit('join-simulation', jsonContent, client);
+                        } else if("player-turn" == jsonContent['type']) {
+                            self.get("emitter").emit('player-turn', jsonContent, client);
+                        }
+                    }
                 } catch(err) {
                     console.log('-- Input malformed');
+                    console.log('---------------------');
+                    console.log(data.toString());
+                    console.log('---------------------');
                     console.log('- ' + err);
                     socket.emit('input-malformed', socket);
                 }
@@ -59,7 +72,7 @@ var InputServer = Backbone.Model.extend({
     },
 
     removeClient: function(client) {
-        this.set("clients", _.without(this.clients, client));
+        this.set("clients", _.without(this.get("clients"), client));
     }
 
 });

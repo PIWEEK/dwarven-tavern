@@ -1,5 +1,6 @@
 {
     "port": 9000,
+    "httpPort": 8080,
 
     "width": 21,
     "height": 21,

@@ -1,0 +1,10 @@
+{
+    "type" : "player-turn",
+    "actions": [
+        { "botId": 1, "type": "MOVE", "direction": "WEST" }, 
+        { "botId": 2, "type": "MOVE", "direction": "EAST" },
+        { "botId": 3, "type": "MOVE", "direction": "NORTH" },
+        { "botId": 4, "type": "MOVE", "direction": "NORTH" },
+        { "botId": 5, "type": "MOVE", "direction": "NORTH" }
+    ]
+}
