@@ -149,3 +149,26 @@ app.update = function(){
     app.dwarf.move();
     app.barrel.move();
 };
+
+app.api.gamesList = function(){
+    return [
+        {id: 1001, players: 2},
+        {id: 1002, players: 1},
+        {id: 1003, players: 0},
+        {id: 1004, players: 2},
+        {id: 1005, players: 2},
+        {id: 1006, players: 1},
+        {id: 1007, players: 2},
+        {id: 1008, players: 1},
+        {id: 1009, players: 0},
+        {id: 1010, players: 2},
+        {id: 1011, players: 2},
+        {id: 1012, players: 1},
+        {id: 1013, players: 2},
+        {id: 1014, players: 2},
+        {id: 1015, players: 1},
+        {id: 1016, players: 2},
+        {id: 1017, players: 2},
+        {id: 1018, players: 1},
+    ];
+}
