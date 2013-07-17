@@ -13,12 +13,12 @@ var WebSocketServer = Backbone.Model.extend({
 
     initialize: function() {
         this.set("socketList", []);
-
-        this.set("io", socketio.listen(this.get("port")));
     },
 
-    start: function() {
+    start: function(server) {
         var self = this;
+
+        this.set("io", socketio.listen(server));
 
         this.get("io").sockets.on('connection', function(socket) {
 
@@ -30,7 +30,7 @@ var WebSocketServer = Backbone.Model.extend({
 
         });
 
-        console.log('===== WebSocketServer started! =====\n++ Listening on ' + this.get("port") + '...');
+        console.log('===== WebServer started! =====\n++ Listening on ' + this.get("port") + '...');
     },
 
     addSocket: function(socket) {

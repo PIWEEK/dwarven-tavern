@@ -1,12 +1,17 @@
 "use strict";
 
 var _ = require("underscore"),
+    express = require("express"),
+    http = require("http"),
     InputServer = require("./client_input/InputServer"),
     SimulationManager = require("./simulation/SimulationManager"),
     PlayerData = require("./simulation/PlayerData"),
     WebSocketServer = require('./visor/WebSocketServer'),
     SimulationTurn = require("./simulation/SimulationTurn"),
     config = require('./config');
+
+var expressApp = express();
+var server = http.createServer(expressApp);
 
 var inputServer = new InputServer(config);
 var simulationManager = new SimulationManager(config);
@@ -17,7 +22,7 @@ simulationManager.get("emitter").on("simulation-ready", function(simulation){
     console.log("\n##################################################\n");
     console.log(simulation.toString());
     console.log("\n##################################################\n");
-    
+
     webSocketServer.emitBroadcast("simulation-ready", {
         player1: {
             nick: simulation.get("player1").get("nick"),
@@ -28,7 +33,7 @@ simulationManager.get("emitter").on("simulation-ready", function(simulation){
             bots: simulation.get("player2").get("names")
         }
     });
-    
+
     var response = JSON.stringify({ type: "turn", state: simulation.getCurrentState()});
     simulation.get("player1").get("client").get("socket").write(response);
 });
@@ -38,9 +43,9 @@ simulationManager.get("emitter").on("team1-turn", function(simulation){
     console.log("\n##################################################\n");
     console.log(simulation.toString());
     console.log("\n##################################################\n");
-    
+
     webSocketServer.emitBroadcast("turn", { type: "turn", messages: simulation.getTurnEvents(), state: simulation.getCurrentState()});
-    
+
     var response = JSON.stringify({ type: "turn", state: simulation.getCurrentState()});
     simulation.get("player2").get("client").get("socket").write(response);
 });
@@ -52,7 +57,7 @@ simulationManager.get("emitter").on("team2-turn", function(simulation){
     console.log("\n##################################################\n");
 
     webSocketServer.emitBroadcast("turn", { type: "turn", messages: simulation.getTurnEvents(), state: simulation.getCurrentState()});
-    
+
     var response = JSON.stringify({ type: "turn", state: simulation.getCurrentState()});
     simulation.get("player1").get("client").get("socket").write(response);
 });
@@ -62,8 +67,8 @@ simulationManager.get("emitter").on("end-game", function(simulation){
     var responseLoss = JSON.stringify({ type: "loss-game", state: simulation.getCurrentState()});
     simulation.get("winner").get("client").get("socket").write(responseWin);
     simulation.get("loser").get("client").get("socket").write(responseLoss);
-    
-    webSocketServer.emitBroadcast("end-game", { 
+
+    webSocketServer.emitBroadcast("end-game", {
         winner: simulation.get("winner").get("nick"),
         loser: simulation.get("loser").get("nick")
     });
@@ -102,4 +107,9 @@ inputServer.get("emitter").on('turn-malformed', function(client) {
 });
 
 inputServer.start();
-webSocketServer.start();
+webSocketServer.start(server);
+server.listen(config.httpPort);
+
+expressApp.get('/', function(req, res) {
+    res.end('Hola mundo');
+});
