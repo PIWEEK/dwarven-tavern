@@ -1,20 +1,4 @@
 app.createGame = function() {
-    /*
-    var socket = io.connect('http://10.8.1.25:8080');
-
-    socket.on('watch-response', function (data) {
-        if(data.type === "ok"){
-            socket.on('turn', function (data) {
-                app.api.save(data);
-            });
-        }else{
-            alert(data.message);
-        }
-    });
-
-    socket.emit("watch-request");
-    */
-
     $("#container").show();
 
     app.stage = new Kinetic.Stage({
@@ -26,10 +10,27 @@ app.createGame = function() {
     app.layer = new Kinetic.Layer();
 
     app.loadImgs().done(function(){
-        app.barrel.init();
-        app.dwarf.init();
+        /*app.socket.on('watch-response', function (data) {
 
-        app.stage.add(app.layer);
+        });
+        app.socket.emit("watch-request", {id: app.gameId});*/
+        
+        
+        var firstTurn = true;
+
+        app.socket.on('turn', function (data) {
+            app.turn = data;
+
+            if(firstTurn) {
+                app.barrel.init();
+
+                app.stage.add(app.layer);
+                firstTurn = false;
+            }else{
+                app.barrel.move();
+                app.dwarf.move();
+            }
+        });
 
         app.play(0);
     });

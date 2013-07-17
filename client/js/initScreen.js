@@ -31,25 +31,21 @@ app.config.createSocket = function() {
 };
 
 app.config.gameListScreen = function() {    
-    app.socket.on("simulation-list", function (data) {
-        console.log(data);
-/*
-        app.api.saveGameList(data);
-
+    app.socket.on("simulation-list", function(data){
         var view = $("#games");
-        var games = app.api.getGameList();
         var html = "";
         
         view.show();
 
-        for(var i = 0; i < games.length; i++){
-            html += "<li>"+games[i].id+" ("+games[i].players+")" +
-                "<span class='watch'>Go!</span>"+
+        for(var i = 0; i < data.serverList.length; i++) {
+            html += "<li>" + data.serverList[i].simulationId +
+                " (" + data.serverList[i].playersConnected+")" +
+                "<span data-id='" + data.serverList[i].simulationId +"' class='watch'>Go!</span>"+
                 "</li>";
         }
 
         view.find("ul").html(html);
-        view.find(".watch").on("click", app.config.watch);  */
+        view.find(".watch").on("click", app.config.watch); 
     });  
 
     app.socket.emit("request-simulation-list");
@@ -70,7 +66,8 @@ app.config.ipScreen = function(){
     });
 };
 
-app.config.watch = function() {
+app.config.watch = function(e) {
+    app.gameId = $(e.currentTarget).data("id");
     app.createGame();
     $("#games").remove();
 };
