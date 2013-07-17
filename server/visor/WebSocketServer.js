@@ -29,10 +29,11 @@ var WebSocketServer = Backbone.Model.extend({
             });
 
         });
+
+        console.log('===== WebSocketServer started! =====\n++ Listening on ' + this.get("port") + '...');
     },
 
     addSocket: function(socket) {
-        console.log('===== WebSocketServer started! =====\n++ Listening on ' + this.get("port") + '...');
         this.get("socketList").push(socket);
     },
 
