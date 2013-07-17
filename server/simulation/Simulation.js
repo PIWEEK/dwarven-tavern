@@ -112,7 +112,6 @@ var Simulation = Backbone.Model.extend({
         var grid = this.get("grid");
         var simulationTeams = this.get("teams");
         var state = "";
-        var i=0;
         _.each(grid, function(row) {
             _.each(row, function(value) {
                 var team = _.indexOf(simulationTeams, value.team) +1;
@@ -266,6 +265,7 @@ var Simulation = Backbone.Model.extend({
             height = this.get("height"),
             bots = this.get("bots"),
             barrels = this.get("barrels"),
+            teams = this.get("teams"),
             oldCoords = barrelCoords,
             newCoords = { x: oldCoords.x, y: oldCoords.y },
             teamId = grid[oldCoords.y][oldCoords.x].team;
@@ -273,23 +273,32 @@ var Simulation = Backbone.Model.extend({
         switch(direction) {
             case BotAction.Directions.NORTH:
                 newCoords.y -= 1;
-                if (newCoords.y < 0) newCoords.y = 0;
+                if(teamId == teams[1]) {
+                	if (newCoords.y < 1) newCoords.y = 1;
+                } else {
+                	if (newCoords.y < 0) newCoords.y = 0;
+                }
                 break;
                 
             case BotAction.Directions.SOUTH:
                 newCoords.y += 1;
-                if (newCoords.y >= height) newCoords.y = height-1;
+                
+                if(teamId == teams[0]) {
+                	if (newCoords.y > height-2) newCoords.y = height-2;
+                } else {
+                	if (newCoords.y > height-1) newCoords.y = height-1;
+                }
                 break;
                 
             case BotAction.Directions.EAST:
                 newCoords.x += 1;
-                if (newCoords.x >= width) newCoords.x = width-1;
+                if (newCoords.x > width-2) newCoords.x = width-2;
                 
                 break;
                 
             case BotAction.Directions.WEST:
                 newCoords.x -= 1;
-                if (newCoords.x < 0) newCoords.x = 0;
+                if (newCoords.x < 1) newCoords.x = 1;
                 break;
         }
         
@@ -324,6 +333,7 @@ var Simulation = Backbone.Model.extend({
         var grid = this.get("grid"), 
             width = this.get("width"), 
             height = this.get("height"),
+            bots = this.get("bots"),
             teamId = botData.get("team"),
             botId = botData.get("id");
         
@@ -371,27 +381,25 @@ var Simulation = Backbone.Model.extend({
         
         grid[oldCoords.y][oldCoords.x] = { state: GridCellState.EMPTY };
         
-        if(grid[newCoords.y][newCoords.x].state == GridCellState.EMPTY) {
-            // We put the new data on the related grid
-            grid[newCoords.y][newCoords.x] = { 
-                state: GridCellState.BOT, 
-                team: teamId,
-                botId: botId
-            };
-        } else if(grid[newCoords.y][newCoords.x].state == GridCellState.BARREL){
+        if(grid[newCoords.y][newCoords.x].state == GridCellState.BARREL){
             this.moveBarrel(newCoords, direction);
-            
             if(grid[newCoords.y][newCoords.x].state != GridCellState.EMPTY){
                 // If we are unable to move the barrel, we stay in the same coord
                 newCoords = oldCoords;
             } 
-            grid[newCoords.y][newCoords.x] = { 
-                state: GridCellState.BOT, 
-                team: teamId,
-                botId: botId
-            };
+        } else if(grid[newCoords.y][newCoords.x].state == GridCellState.BOT){
+            this.hitBot(bots[grid[newCoords.y][newCoords.x]["botId"]], direction);
+            if(grid[newCoords.y][newCoords.x].state != GridCellState.EMPTY){
+                // If we are unable to move the barrel, we stay in the same coord
+                newCoords = oldCoords;
+            } 
         }
         
+        grid[newCoords.y][newCoords.x] = { 
+            state: GridCellState.BOT, 
+            team: teamId,
+            botId: botId
+        };
         // Update the bot data with the new coords
         botData.set("coords", newCoords);
     }
@@ -404,7 +412,7 @@ if (require.main === module) {
         new BotData({
             id: 1,
             name: "Rhun Diamondfighter",
-            coords: { x: 11, y: 18 },
+            coords: { x: 18, y: 19 },
         })/*,
         new BotData({
             id: 2,
@@ -428,7 +436,7 @@ if (require.main === module) {
         })*/
     ]);
     
-    simulation.setTeam("team2", {x: 11, y: 19}, [/*
+    simulation.setTeam("team2", {x: 19, y: 19}, [/*
         new BotData({
             id: 6,
             name: "Keenon Bismuth-Fulvous",
@@ -469,7 +477,7 @@ if (require.main === module) {
     console.log(">> " + simulation.get("simulationFinished"));
 
     simulation.processTurn([
-        new BotAction({botId: 1, type: BotAction.Types.MOVE, direction: BotAction.Directions.SOUTH}),
+        new BotAction({botId: 1, type: BotAction.Types.MOVE, direction: BotAction.Directions.EAST}),
 //        new BotAction({botId: 2, type: BotAction.Types.MOVE, direction: BotAction.Directions.EAST}),
 //        new BotAction({botId: 3, type: BotAction.Types.MOVE, direction: BotAction.Directions.WEST}),
 //        new BotAction({botId: 4, type: BotAction.Types.MOVE, direction: BotAction.Directions.SOUTH}),
