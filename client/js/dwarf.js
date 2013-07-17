@@ -61,12 +61,12 @@ app.dwarf = (function () {
 
     var initTeam = function(team, direction, teamImage) {
         for(var i = 0; i < team.length; i++) {
-            printDwarf(team[i].id, team[i].x, team[i].y, direction, teamImage);
+            printDwarf(team[i].id, team[i].coords.x, team[i].coords.y, direction, teamImage);
         }
     }
 
     var initTeam1 =  function() {
-        var dwarfsTeam1 = app.api.getTeam1Dwafs();
+        var dwarfsTeam1 =  app.turn.state.team1;
 
         initTeam(dwarfsTeam1, "top", app.img.team1);
 
@@ -74,9 +74,9 @@ app.dwarf = (function () {
     };
 
     var initTeam2 = function() {
-        var dwarfsTeam2 = app.api.getTeam2Dwafs();
+        var dwarfsTeam2 = app.turn.state.team2;
 
-        initTeam(dwarfsTeam2,  "bottom", app.img.team2);
+        initTeam(dwarfsTeam2, "bottom", app.img.team2);
 
         app.history.team2 = dwarfsTeam2;
     };
@@ -86,7 +86,7 @@ app.dwarf = (function () {
 
         dwarf.sprite.setAnimation("walk" + direction);;
 
-        var newPosition = app.grid.getXYGrid(dwarfNew.x, dwarfNew.y);
+        var newPosition = app.grid.getXYGrid(dwarfNew.coords.x, dwarfNew.coords.y);
 
         var tween = new Kinetic.Tween({
             node: dwarf.sprite, 
@@ -104,16 +104,16 @@ app.dwarf = (function () {
     var updateDwarf = function(dwarf, teamHistory) {
         for(var z = 0; z < teamHistory.length; z++) {
             if(dwarf.id === teamHistory[z].id) {
-                if(dwarf.x !== teamHistory[z].x){
-                    if(teamHistory[z].x > dwarf.x) {
+                if(dwarf.coords.x !== teamHistory[z].coords.x){
+                    if(teamHistory[z].coords.x > dwarf.coords.x) {
                         moveDward(dwarf, "left");
                     }else {
                         moveDward(dwarf, "right");
                     }
-                }else if (dwarf.y !== teamHistory[z].y){
-                    if(teamHistory[z].y > dwarf.y) {
+                }else if (dwarf.coords.y !== teamHistory[z].coords.y){
+                    if(teamHistory[z].coords.y > dwarf.coords.y) {
                         moveDward(dwarf, "top");
-                    }else if(teamHistory[z].y < dwarf.y) {
+                    }else if(teamHistory[z].coords.y < dwarf.coords.y) {
                         moveDward(dwarf, "bottom");
                     }
                 }
@@ -122,7 +122,7 @@ app.dwarf = (function () {
     };
 
     var moveTeam1 = function() {
-        var dwarfsTeam1 = app.api.getTeam1Dwafs();
+        var dwarfsTeam1 = app.turn.state.team1;
 
         for(var i = 0; i < dwarfsTeam1.length; i++) {
             updateDwarf(dwarfsTeam1[i], app.history.team1);
@@ -133,7 +133,7 @@ app.dwarf = (function () {
 
 
     var moveTeam2 = function() {
-        var dwarfsTeam2 = app.api.getTeam2Dwafs();
+        var dwarfsTeam2 = app.turn.state.team2;
 
         for(var i = 0; i < dwarfsTeam2.length; i++) {
             updateDwarf(dwarfsTeam2[i], app.history.team2);

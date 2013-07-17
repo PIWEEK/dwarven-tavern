@@ -17,19 +17,26 @@ app.createGame = function() {
         
         
         var firstTurn = true;
+        var turn = 0;
 
         app.socket.on('turn', function (data) {
-            app.turn = data;
+            turn++;
 
-            if(firstTurn) {
-                app.barrel.init();
+            setTimeout(function(){
+                console.log(data);
+                app.turn = data;
 
-                app.stage.add(app.layer);
-                firstTurn = false;
-            }else{
-                app.barrel.move();
-                app.dwarf.move();
-            }
+                if(firstTurn) {
+                    app.barrel.init();
+                    app.dwarf.init();
+
+                    app.stage.add(app.layer);
+                    firstTurn = false;
+                }else{
+                    app.barrel.move();
+                    app.dwarf.move();
+                }
+            }, turn * 1000);
         });
 
         app.play(0);
