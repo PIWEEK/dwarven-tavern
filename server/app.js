@@ -108,6 +108,7 @@ inputServer.get("emitter").on('turn-malformed', function(client) {
 });
 
 webSocketServer.get("emitter").on("simulation-list", function(socket){
+    console.log("-------------------------------------")
     socket.emit("simulation-list", { serverList: simulationManager.getSimulationList()});
 });
 
