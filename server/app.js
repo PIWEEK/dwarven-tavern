@@ -3,6 +3,7 @@
 var _ = require("underscore"),
     express = require("express"),
     http = require("http"),
+    path = require("path"),
     InputServer = require("./client_input/InputServer"),
     SimulationManager = require("./simulation/SimulationManager"),
     PlayerData = require("./simulation/PlayerData"),
@@ -111,5 +112,6 @@ webSocketServer.start(server);
 server.listen(config.httpPort);
 
 expressApp.get('/', function(req, res) {
-    res.end('Hola mundo');
+    var viewsPath = path.resolve("..", 'client', 'test-ws.html');
+    res.sendfile(viewsPath);
 });
