@@ -72,7 +72,7 @@ var InputServer = Backbone.Model.extend({
     },
 
     removeClient: function(client) {
-        this.set("clients", _.without(this.clients, client));
+        this.set("clients", _.without(this.get("clients"), client));
     }
 
 });
