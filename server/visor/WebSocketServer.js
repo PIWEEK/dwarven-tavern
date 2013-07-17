@@ -2,6 +2,7 @@
 
 var Backbone = require('backbone'),
     socketio = require('socket.io'),
+    EventEmitter = require('events').EventEmitter,
     _ = require('underscore');
 
 var WebSocketServer = Backbone.Model.extend({
