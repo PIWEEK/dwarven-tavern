@@ -5,7 +5,7 @@ var BotData = Backbone.Model.extend({
         id: 0,
         name: "",
         coords: { x: 0, y: 0 },
-        team: 0
+        team: null
     }
 });
 

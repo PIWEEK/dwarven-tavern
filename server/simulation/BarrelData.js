@@ -2,7 +2,7 @@ var Backbone = require("backbone");
 
 var BarrelData = Backbone.Model.extend({
     defaults: {
-        team: 0,
+        team: null,
         coords: { x: 0, y: 0 }
     }
 });

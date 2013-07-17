@@ -12,21 +12,31 @@ var GridCellState = {
    BARREL: 2
 };
 
+var SimulationEventType  = {
+    BOT_MOVE: 0,
+    BARREL_HIT: 1,
+    END_GAME: 2,
+    SCORE: 3,
+    BOT_HIT: 4,
+};
+
 var Simulation = Backbone.Model.extend({
     defaults: {
         grid: null,
         barrels: {},
-        bots: {}
+        bots: {},
+        currentTurn: 0,
+        teams: null,
+        simulationFinished: false
     },
     
     /**
      * Initialize the game grid with the heiht/width passed as parameters 
      */
     initialize: function(){
-        var width = this.get("width");
-        var height = this.get("height");
-        
-        var grid = new Array();
+        var width = this.get("width"),
+            height = this.get("height"),
+            grid = new Array();
         
         for(var row=0; row<height; row++) {
             grid[row] = new Array();
@@ -35,6 +45,26 @@ var Simulation = Backbone.Model.extend({
             }
         }
         this.set("grid", grid);
+        this.set("turnEvents", {});
+        this.set("teams", []);
+    },
+    
+    getTurnEvents: function(){
+        var turn = this.get("currentTurn");
+        if(this.get("turnEvents")[turn]) {
+            return this.get("turnEvents")[turn];
+        } else {
+            return [];
+        }
+    },
+    
+    addTurnEvent: function(event){
+        var turn = this.get("currentTurn");
+        
+        if(!this.get("turnEvents")[turn]) {
+            this.get("turnEvents")[turn] = [];
+        } 
+        this.get("turnEvents")[turn].push(event);
     },
     
     /**
@@ -45,6 +75,9 @@ var Simulation = Backbone.Model.extend({
         var bots = this.get("bots");
         var self = this;
         
+        var currentTurn = this.get("currentTurn") + 1;
+        this.set("currentTurn", currentTurn);
+        
         _.each(actions, function(botAction){
             if (botAction.get("type") === BotAction.Types.MOVE) {
                 if(bots[botAction.get("botId")]) {
@@ -52,6 +85,20 @@ var Simulation = Backbone.Model.extend({
                 } 
             }
         });
+        
+        // Check the barrels and to end the game
+        var barrels = this.get("barrels");
+        
+        if (barrels[0].coords.y == 0) {
+            this.set("simulationFinished", true);
+            this.set("loser", this.get("player1"));
+            this.set("winner", this.get("player2"));
+        }
+        if (barrels[1].coords.y == this.get("height")-1) {
+            this.set("simulationFinished", true);
+            this.set("winner", this.get("player1"));
+            this.set("loser", this.get("player2"));
+        }
     },
     
     /**
@@ -60,15 +107,17 @@ var Simulation = Backbone.Model.extend({
      */
     toString: function() {
         var grid = this.get("grid");
+        var simulationTeams = this.get("teams");
         var state = "";
         _.each(grid, function(row) {
             _.each(row, function(value) {
+                var team = _.indexOf(simulationTeams, value.team) +1;
                 if(value.state === GridCellState.EMPTY) {
                     state = state + "[  ]";
                 } else if(value.state === GridCellState.BARREL) {
-                    state = state + "[b" + value.team + "]";
+                    state = state + "[b" + team + "]";
                 } else if(value.state === GridCellState.BOT) {
-                    state = state + "[D" + value.team + "]";
+                    state = state + "[D" + team + "]";
                 } else {
                     state = state + "[??]";
                 }
@@ -86,19 +135,18 @@ var Simulation = Backbone.Model.extend({
         var barrels = this.get("barrels"),
             bots = this.get("bots");
         
-        var team1 = [], team2 = [];
-        _.each(bots, function(botData){
-            if(botData.get("team") == 0) {
-                team1.push(botData);
-            } else  {
-                team2.push(botData);
-            }
-        });
         var result = {
-           barrels: barrels,
-           team1: team1,
-           team2: team2,
+            barrels: barrels,
         };
+        
+        _.each(bots, function(botData){
+            var team = botData.get("team");
+            if(!result[team]) {
+                result[team] = [];
+            }
+            result[team].push(botData);
+        });
+        
         return result;
     },
     
@@ -128,6 +176,7 @@ var Simulation = Backbone.Model.extend({
             };
             bots[botData.get("id")] = botData;
         });
+        this.get("teams").push(teamId);
     },
     
     /**
@@ -167,6 +216,8 @@ var Simulation = Backbone.Model.extend({
                 if (newCoords.x < 0) newCoords.x = 0;
                 break;
         }
+        
+        this.addTurnEvent({type: SimulationEventType.BOT_MOVE, message: botData.get("name") + " moves toward " + direction});
         
         // TODO: We should check conflicts
         
@@ -239,6 +290,8 @@ var Simulation = Backbone.Model.extend({
                 break;
         }
         
+        this.addTurnEvent({type: SimulationEventType.BOT_MOVE, message: "Barrel of team" + (teamId+1) + " moves toward " + direction});
+
         grid[oldCoords.y][oldCoords.x] = { state: GridCellState.EMPTY };
         if(grid[newCoords.y][newCoords.x].state == GridCellState.EMPTY) {
             grid[newCoords.y][newCoords.x] = { state: GridCellState.BARREL, team: teamId };
@@ -273,6 +326,8 @@ var Simulation = Backbone.Model.extend({
             teamId = botData.get("team"),
             botId = botData.get("id");
         
+        this.addTurnEvent({type: SimulationEventType.BARREL_HIT, message: "Barrel of team" + (teamId+1) + " hit " + botData.get("name")});
+
         var oldCoords = botData.get("coords"),
             newCoords = { x: oldCoords.x, y: oldCoords.y };
         
@@ -427,8 +482,10 @@ if (require.main === module) {
     ]);
 
 //    console.log("\n\n####################################################################################\n\n");
-    console.log(simulation.toString());
+//    console.log(simulation.toString());
 //    console.log(JSON.stringify(simulation.getCurrentState(), undefined, 2));
+    
+    console.log(JSON.stringify(simulation.getTurnEvents(1), undefined, 2));
     
 }
 

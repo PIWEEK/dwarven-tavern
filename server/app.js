@@ -40,6 +40,14 @@ simulationManager.get("emitter").on("team2-turn", function(simulation){
     simulation.get("player1").get("client").get("socket").write(response);
 });
 
+simulationManager.get("emitter").on("end-game", function(simulation){
+    var responseWin = JSON.stringify({ type: "win-game", state: simulation.getCurrentState()});
+    var responseLoss = JSON.stringify({ type: "loss-game", state: simulation.getCurrentState()});
+    simulation.get("winner").get("client").get("socket").write(responseWin);
+    simulation.get("loser").get("client").get("socket").write(responseLoss);
+});
+
+
 inputServer.get("emitter").on("create-simulation", function(jsonContent, client){
     console.log("++ Simulation create");
     var simulationID = simulationManager.createSimulation();
@@ -69,7 +77,6 @@ inputServer.get("emitter").on("player-turn", function(jsonContent, client) {
 
 inputServer.get("emitter").on('turn-malformed', function(client) {
     var response = '{"type": "error", "message": "Invalid turn"}\n';
-
     client.get("socket").write(response);
 });
 

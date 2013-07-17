@@ -5,8 +5,7 @@ var Backbone = require("backbone"),
     Simulation = require("./Simulation"),
     SimulationTurn = require("./SimulationTurn"),
     PlayerData = require("./PlayerData"),
-    BotData = require("./BotData"),
-    BotAction = require("./BotAction");
+    BotData = require("./BotData");
 
 var SimulationManager = Backbone.Model.extend({
     defaults: {
@@ -53,7 +52,7 @@ var SimulationManager = Backbone.Model.extend({
                 coords: positions.bots[i]
             }));
         }
-        simulation.setTeam(playersConnected, positions.barrel, botsData);
+        simulation.setTeam("team"+(playersConnected+1), positions.barrel, botsData);
         
         playersConnected++;
         
@@ -75,12 +74,10 @@ var SimulationManager = Backbone.Model.extend({
         console.log("++ Turn for simulation: " + simulation.get("id"));
         simulation.processTurn(simulationTurn.get("actions"));
         
-        if(simulation.get("currentTurn") == 0) {
+        if(simulation.get("currentTurn") % 2 == 1) {
             this.get("emitter").emit("team1-turn", simulation);
-            simulation.set("currentTurn", 1);
         } else {
             this.get("emitter").emit("team2-turn", simulation);
-            simulation.set("currentTurn", 0);
         }
     },
     
@@ -89,10 +86,17 @@ var SimulationManager = Backbone.Model.extend({
         var clientName = socket.remoteAddress + ":" + socket.remotePort;
         var uid = this.get("clients")[clientName];
         return this.get("simulations")[uid];
+    },
+    
+    getSimulationList: function() {
+        return _.keys(this.get("simulations"));
     }
 });
 
 if (require.main === module) {
+    var BotAction = require("./BotAction"),
+        Client = require("../client_input/Client");
+    
     var config = {
         port: 9000,
         
@@ -126,19 +130,23 @@ if (require.main === module) {
         console.log(">> TEAM2 %j", simulationState);
     });
     
+    var client1 = new Client({socket: {remoteAddress: "localhost",remotePort:"1111"}});
     manager.joinSimulation(uid, new PlayerData({
         nick: "gimli",
         playerId: "" + hat(),
-        names: ["Dwarf1", "Dwarf2", "Dwarf3", "Dwarf4", "Dwarf5"]
+        names: ["Dwarf1", "Dwarf2", "Dwarf3", "Dwarf4", "Dwarf5"],
+        client: client1
     }));
     
+    var client2 = new Client({socket: {remoteAddress: "localhost",remotePort:"2222"}});
     manager.joinSimulation(uid, new PlayerData({
         nick: "gloin",
         playerId: "" + hat(),
-        names: ["Dwarf1", "Dwarf2", "Dwarf3", "Dwarf4", "Dwarf5"]
+        names: ["Dwarf1", "Dwarf2", "Dwarf3", "Dwarf4", "Dwarf5"],
+        client: client2 
     }));
     
-    manager.sendTurn(uid, new SimulationTurn({
+    manager.sendTurn(client1, new SimulationTurn({
         actions: [
             new BotAction({botId: 1, type: BotAction.Types.MOVE, direction: BotAction.Directions.NORTH}),
             new BotAction({botId: 2, type: BotAction.Types.MOVE, direction: BotAction.Directions.NORTH}),
@@ -148,7 +156,7 @@ if (require.main === module) {
         ]
     }));
 
-    manager.sendTurn(uid, new SimulationTurn({
+    manager.sendTurn(client2, new SimulationTurn({
         actions: [
             new BotAction({botId: 6,  type: BotAction.Types.MOVE, direction: BotAction.Directions.SOUTH}),
             new BotAction({botId: 7,  type: BotAction.Types.MOVE, direction: BotAction.Directions.SOUTH}),
@@ -159,6 +167,7 @@ if (require.main === module) {
     }));
     
     console.log(manager.get("simulations")[uid].toString());
+    console.log("%j", manager.getSimulationList());
 }
 
 module.exports = SimulationManager;
