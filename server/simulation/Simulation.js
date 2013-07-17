@@ -91,11 +91,13 @@ var Simulation = Backbone.Model.extend({
         var teams = this.get("teams");
         
         if (barrels[teams[0]].get("coords").y == 0) {
+            console.log("+++++ FUUUU");
             this.set("simulationFinished", true);
             this.set("loser", this.get("player1"));
             this.set("winner", this.get("player2"));
         }
         if (barrels[teams[1]].get("coords").y == this.get("height")-1) {
+            console.log("+++++ FUUUU");
             this.set("simulationFinished", true);
             this.set("winner", this.get("player1"));
             this.set("loser", this.get("player2"));
@@ -110,6 +112,7 @@ var Simulation = Backbone.Model.extend({
         var grid = this.get("grid");
         var simulationTeams = this.get("teams");
         var state = "";
+        var i=0;
         _.each(grid, function(row) {
             _.each(row, function(value) {
                 var team = _.indexOf(simulationTeams, value.team) +1;
@@ -189,6 +192,7 @@ var Simulation = Backbone.Model.extend({
         var grid = this.get("grid"), 
             width = this.get("width"), 
             height = this.get("height"),
+            bots = this.get("bots"),
             teamId = botData.get("team"),
             botId = botData.get("id");
         
@@ -227,28 +231,26 @@ var Simulation = Backbone.Model.extend({
             state: GridCellState.EMPTY 
         };
         
-        if(grid[newCoords.y][newCoords.x].state == GridCellState.EMPTY) {
-            // We put the new data on the related grid
-            grid[newCoords.y][newCoords.x] = { 
-                state: GridCellState.BOT, 
-                team: teamId,
-                botId: botId
-            };
-        } else if(grid[newCoords.y][newCoords.x].state == GridCellState.BARREL){
+        if(grid[newCoords.y][newCoords.x].state == GridCellState.BARREL){
             this.moveBarrel(newCoords, direction);
             
             if(grid[newCoords.y][newCoords.x].state != GridCellState.EMPTY){
                 // If we are unable to move the barrel, we stay in the same coord
                 newCoords = oldCoords;
             } 
-            grid[newCoords.y][newCoords.x] = { 
-                state: GridCellState.BOT, 
-                team: teamId,
-                botId: botId
-            };
-
+            
+        } else if(grid[newCoords.y][newCoords.x].state == GridCellState.BOT){
+            this.hitBot(bots[grid[newCoords.y][newCoords.x].botId], direction);
+            if(grid[newCoords.y][newCoords.x].state != GridCellState.EMPTY){
+                newCoords = oldCoords;
+            }
         }
         
+        grid[newCoords.y][newCoords.x] = { 
+            state: GridCellState.BOT, 
+            team: teamId,
+            botId: botId
+        };
         // Update the bot data with the new coords
         botData.set("coords", newCoords);
     },
@@ -291,15 +293,12 @@ var Simulation = Backbone.Model.extend({
                 break;
         }
         
-        this.addTurnEvent({type: SimulationEventType.BOT_MOVE, message: "Barrel of team" + (teamId+1) + " moves toward " + direction});
+        this.addTurnEvent({type: SimulationEventType.BOT_MOVE, message: "Barrel of " + teamId + " moves toward " + direction});
 
         grid[oldCoords.y][oldCoords.x] = { state: GridCellState.EMPTY };
-        if(grid[newCoords.y][newCoords.x].state == GridCellState.EMPTY) {
-            grid[newCoords.y][newCoords.x] = { state: GridCellState.BARREL, team: teamId };
-            barrels[teamId].coords = {x: newCoords.x, y: newCoords.y};
-        } else if(grid[newCoords.y][newCoords.x].state == GridCellState.BARREL) {
-            grid[oldCoords.y][oldCoords.x] = { state: GridCellState.BARREL, team: teamId };
-            barrels[teamId].coords = {x: oldCoords.x, y: oldCoords.y};
+        
+        if(grid[newCoords.y][newCoords.x].state == GridCellState.BARREL) {
+            newCoords = oldCoords;
         } else if(grid[newCoords.y][newCoords.x].state == GridCellState.BOT) {
             this.hitBot(bots[grid[newCoords.y][newCoords.x].botId], direction);
             
@@ -307,12 +306,13 @@ var Simulation = Backbone.Model.extend({
                 // If we are unable to "clean" de space, we stay where we were
                 newCoords = oldCoords;
             } 
-            grid[newCoords.y][newCoords.x] = { 
-                state: GridCellState.BARREL, 
-                team: teamId
-            };
-            barrels[teamId].coords = {x: newCoords.x, y: newCoords.y};
         }
+        
+        grid[newCoords.y][newCoords.x] = { 
+            state: GridCellState.BARREL, 
+            team: teamId 
+        };
+        barrels[teamId].set("coords", {x: newCoords.x, y: newCoords.y});
     },
     
     /**
@@ -400,16 +400,16 @@ var Simulation = Backbone.Model.extend({
 if (require.main === module) {
     var simulation = new Simulation({width: 21, height: 21});
     
-    simulation.setTeam(0, {x: 8, y: 9}, [
+    simulation.setTeam("team1", {x: 8, y: 9}, [
         new BotData({
             id: 1,
             name: "Rhun Diamondfighter",
-            coords: { x: 4, y: 18 },
-        }),
+            coords: { x: 11, y: 18 },
+        })/*,
         new BotData({
             id: 2,
             name: "Balgairen Marble-Flame",
-            coords: { x: 7, y: 18 },
+            coords: { x: 0, y: 19 },
         }),
         new BotData({
             id: 3,
@@ -425,10 +425,10 @@ if (require.main === module) {
             id: 5,
             name: "Riagan Rubygold",
             coords: { x: 16, y: 18 },
-        })
+        })*/
     ]);
     
-    simulation.setTeam(1, {x: 11, y: 9}, [
+    simulation.setTeam("team2", {x: 11, y: 19}, [/*
         new BotData({
             id: 6,
             name: "Keenon Bismuth-Fulvous",
@@ -463,27 +463,29 @@ if (require.main === module) {
             id: 99,
             name: "Fulanito de tal II",
             coords: { x: 8, y: 10 },
-        })
+        })*/
     ]);
     console.log(simulation.toString());
-    
+    console.log(">> " + simulation.get("simulationFinished"));
+
     simulation.processTurn([
-        new BotAction({botId: 1, type: BotAction.Types.MOVE, direction: BotAction.Directions.NORTH}),
-        new BotAction({botId: 2, type: BotAction.Types.MOVE, direction: BotAction.Directions.EAST}),
-        new BotAction({botId: 3, type: BotAction.Types.MOVE, direction: BotAction.Directions.WEST}),
-        new BotAction({botId: 4, type: BotAction.Types.MOVE, direction: BotAction.Directions.SOUTH}),
-        new BotAction({botId: 5, type: BotAction.Types.MOVE, direction: BotAction.Directions.NORTH}),
-        new BotAction({botId: 6, type: BotAction.Types.MOVE, direction: BotAction.Directions.SOUTH}),
-        new BotAction({botId: 7, type: BotAction.Types.MOVE, direction: BotAction.Directions.EAST}),
-        new BotAction({botId: 8, type: BotAction.Types.MOVE, direction: BotAction.Directions.WEST}),
-        new BotAction({botId: 9, type: BotAction.Types.MOVE, direction: BotAction.Directions.NORTH}),
-        new BotAction({botId: 10, type: BotAction.Types.MOVE, direction: BotAction.Directions.SOUTH}),
+        new BotAction({botId: 1, type: BotAction.Types.MOVE, direction: BotAction.Directions.SOUTH}),
+//        new BotAction({botId: 2, type: BotAction.Types.MOVE, direction: BotAction.Directions.EAST}),
+//        new BotAction({botId: 3, type: BotAction.Types.MOVE, direction: BotAction.Directions.WEST}),
+//        new BotAction({botId: 4, type: BotAction.Types.MOVE, direction: BotAction.Directions.SOUTH}),
+//        new BotAction({botId: 5, type: BotAction.Types.MOVE, direction: BotAction.Directions.NORTH}),
+//        new BotAction({botId: 6, type: BotAction.Types.MOVE, direction: BotAction.Directions.SOUTH}),
+//        new BotAction({botId: 7, type: BotAction.Types.MOVE, direction: BotAction.Directions.EAST}),
+//        new BotAction({botId: 8, type: BotAction.Types.MOVE, direction: BotAction.Directions.WEST}),
+//        new BotAction({botId: 9, type: BotAction.Types.MOVE, direction: BotAction.Directions.NORTH}),
+//        new BotAction({botId: 10, type: BotAction.Types.MOVE, direction: BotAction.Directions.SOUTH}),
         
-        new BotAction({botId: 98, type: BotAction.Types.MOVE, direction: BotAction.Directions.SOUTH}),
+//        new BotAction({botId: 98, type: BotAction.Types.MOVE, direction: BotAction.Directions.SOUTH}),
     ]);
 
 //    console.log("\n\n####################################################################################\n\n");
     console.log(simulation.toString());
+    console.log(">> " + simulation.get("simulationFinished"));
 //    console.log(JSON.stringify(simulation.getCurrentState(), undefined, 2));
     
 //    console.log(JSON.stringify(simulation.getTurnEvents(1), undefined, 2));

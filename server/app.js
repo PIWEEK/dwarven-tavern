@@ -64,6 +64,8 @@ simulationManager.get("emitter").on("team2-turn", function(simulation){
 });
 
 simulationManager.get("emitter").on("end-game", function(simulation){
+    console.log("++ GAME FINISHED");
+    
     var responseWin = JSON.stringify({ type: "win-game", state: simulation.getCurrentState()});
     var responseLoss = JSON.stringify({ type: "loss-game", state: simulation.getCurrentState()});
     simulation.get("winner").get("client").get("socket").write(responseWin);

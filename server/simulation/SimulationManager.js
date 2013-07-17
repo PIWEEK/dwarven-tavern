@@ -73,13 +73,20 @@ var SimulationManager = Backbone.Model.extend({
     
     sendTurn: function(client, simulationTurn) {
         var simulation = this.getSimulationForClient(client);
-        console.log("++ Turn for simulation: " + simulation.get("id"));
-        simulation.processTurn(simulationTurn.get("actions"));
         
-        if(simulation.get("currentTurn") % 2 == 1) {
-            this.get("emitter").emit("team1-turn", simulation);
-        } else {
-            this.get("emitter").emit("team2-turn", simulation);
+        if(!simulation.get("simulationFinished")) {
+            console.log("++ Turn for simulation: " + simulation.get("id"));
+            simulation.processTurn(simulationTurn.get("actions"));
+            
+            if(simulation.get("currentTurn") % 2 == 1) {
+                this.get("emitter").emit("team1-turn", simulation);
+            } else {
+                this.get("emitter").emit("team2-turn", simulation);
+            }
+            
+            if(simulation.get("simulationFinished")) {
+                this.get("emitter").emit("end-game", simulation);
+            }
         }
     },
     
