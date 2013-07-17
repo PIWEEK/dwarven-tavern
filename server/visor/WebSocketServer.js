@@ -8,11 +8,13 @@ var WebSocketServer = Backbone.Model.extend({
     defaults: {
         port: 8080,
         io: null,
-        socketList: null
+        socketList: null,
+        emitter: null
     },
 
     initialize: function() {
         this.set("socketList", []);
+        this.set("emitter", new EventEmitter());
     },
 
     start: function(server) {
@@ -26,6 +28,10 @@ var WebSocketServer = Backbone.Model.extend({
 
             socket.on('disconnect', function() {
                 self.removeSocket(socket);
+            });
+
+            socket.on('request-game-list', function() {
+                self.get("emitter").emit('simulation-list', socket);
             });
 
         });
