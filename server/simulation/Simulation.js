@@ -267,7 +267,7 @@ var Simulation = Backbone.Model.extend({
             oldCoords = barrelCoords,
             newCoords = { x: oldCoords.x, y: oldCoords.y },
             teamId = grid[oldCoords.y][oldCoords.x].team;
-    
+        
         switch(direction) {
             case BotAction.Directions.NORTH:
                 newCoords.y -= 1;
@@ -296,10 +296,10 @@ var Simulation = Backbone.Model.extend({
         grid[oldCoords.y][oldCoords.x] = { state: GridCellState.EMPTY };
         if(grid[newCoords.y][newCoords.x].state == GridCellState.EMPTY) {
             grid[newCoords.y][newCoords.x] = { state: GridCellState.BARREL, team: teamId };
-            barrelData[teamId].coords = {x: newCoords.x, y: newCoords.y};
+            barrels[teamId].coords = {x: newCoords.x, y: newCoords.y};
         } else if(grid[newCoords.y][newCoords.x].state == GridCellState.BARREL) {
             grid[oldCoords.y][oldCoords.x] = { state: GridCellState.BARREL, team: teamId };
-            barrelData[teamId].coords = {x: oldCoords.x, y: oldCoords.y};
+            barrels[teamId].coords = {x: oldCoords.x, y: oldCoords.y};
         } else if(grid[newCoords.y][newCoords.x].state == GridCellState.BOT) {
             this.hitBot(bots[grid[newCoords.y][newCoords.x].botId], direction);
             
@@ -465,7 +465,7 @@ if (require.main === module) {
             coords: { x: 8, y: 10 },
         })
     ]);
-//    console.log(simulation.toString());
+    console.log(simulation.toString());
     
     simulation.processTurn([
         new BotAction({botId: 1, type: BotAction.Types.MOVE, direction: BotAction.Directions.NORTH}),
@@ -483,10 +483,10 @@ if (require.main === module) {
     ]);
 
 //    console.log("\n\n####################################################################################\n\n");
-//    console.log(simulation.toString());
+    console.log(simulation.toString());
 //    console.log(JSON.stringify(simulation.getCurrentState(), undefined, 2));
     
-    console.log(JSON.stringify(simulation.getTurnEvents(1), undefined, 2));
+//    console.log(JSON.stringify(simulation.getTurnEvents(1), undefined, 2));
     
 }
 

@@ -67,6 +67,8 @@ var SimulationManager = Backbone.Model.extend({
             simulation.set("currentTurn", 0);
             this.get("emitter").emit("simulation-ready", simulation);
         }
+        
+        return simulation;
     },
     
     sendTurn: function(client, simulationTurn) {
@@ -96,6 +98,11 @@ var SimulationManager = Backbone.Model.extend({
             result.push({ simulationId: key, playersConnected: connected});
         });
         return result;
+    },
+    
+    hasSimulation: function(simulationId) {
+        var simulations = this.get("simulations");
+        return (true && simulations[simulationId]);
     }
 });
 

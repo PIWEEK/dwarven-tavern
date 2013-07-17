@@ -1,4 +1,4 @@
-"use strict";
+//"use strict";
 
 var _ = require("underscore"),
     express = require("express"),
@@ -84,11 +84,27 @@ inputServer.get("emitter").on("create-simulation", function(jsonContent, client)
 });
 
 inputServer.get("emitter").on("join-simulation", function(jsonContent, client){
-    console.log("++ Player joined: " + jsonContent.simulationId);
+    console.log("++ Player joining: " + jsonContent.simulationId);
     var playerData = new PlayerData({jsonContent: jsonContent});
     playerData.set("client", client);
-    simulationManager.joinSimulation(jsonContent.simulationId, playerData);
-    console.log("++ Player joined OK");
+    
+    if(simulationManager.hasSimulation(jsonContent.simulationId)) {
+        var simulation = simulationManager.joinSimulation(jsonContent.simulationId, playerData);
+        console.log("++ Player joined OK");
+        var playersConnected = simulation.get("playersConnected");
+        var teams = simulation.get("teams");
+        
+        // Send back the game info
+        var response = {
+            type: "game-info",
+            team: teams[playersConnected-1],
+            width: config.width,
+            height: config.height
+        };
+        client.get("socket").write(JSON.stringify(response));
+    } else {
+        client.get("socket").write(JSON.stringify({"type": "error", "message": "Wrong simulation ID"}));
+    }
 });
 
 inputServer.get("emitter").on("player-turn", function(jsonContent, client) {
