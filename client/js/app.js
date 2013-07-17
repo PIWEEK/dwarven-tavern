@@ -36,7 +36,7 @@ app.createGame = function() {
                     app.barrel.move();
                     app.dwarf.move();
                 }
-            }, turn * 1000);
+            }, turn * 100);
         });
 
         app.play(0);

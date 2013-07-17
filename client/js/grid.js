@@ -5,8 +5,8 @@ app.grid = (function() {
     var getXYGrid = function(x, y) {
         var position = {};
 
-        position.x = box_width * (x + 1);
-        position.y = box_height * (y + 1);
+        position.x = box_width * x;
+        position.y = box_height * y ;
 
         return position;
     };
@@ -23,5 +23,5 @@ app.grid = (function() {
     return {
         getXYGrid: getXYGrid,
         getPosXY: getPosXY
-    }
+    };
 })();
