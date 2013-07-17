@@ -31,7 +31,7 @@ var WebSocketServer = Backbone.Model.extend({
                 self.removeSocket(socket);
             });
 
-            socket.on('request-game-list', function() {
+            socket.on('request-simulation-list', function() {
                 self.get("emitter").emit('simulation-list', socket);
             });
 

@@ -107,11 +107,15 @@ inputServer.get("emitter").on('turn-malformed', function(client) {
     client.get("socket").write(response);
 });
 
+webSocketServer.get("emitter").on("simulation-list", function(socket){
+    socket.emit("simulation-list", { serverList: simulationManager.getSimulationList()});
+});
+
 inputServer.start();
 webSocketServer.start(server);
 server.listen(config.httpPort);
 
 expressApp.get('/', function(req, res) {
-    var viewsPath = path.resolve("..", 'client', 'test-ws.html');
+    var viewsPath = path.resolve(__dirname, "..", 'client', 'test-ws.html');
     res.sendfile(viewsPath);
 });

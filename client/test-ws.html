@@ -10,19 +10,27 @@
         <script src="http://localhost:8080/socket.io/socket.io.js"></script>
         <script>
             var socket = io.connect('http://localhost:8080');
+            
+            socket.emit("request-simulation-list");
+            
+            socket.on('simulation-list', function(data) {
+                console.log(">>>>>>>>>>>>>>>>>>>>>> SIMULATION LIST <<<<<<<<<<<<<<<<<<<<");
+                console.log(data);
+                console.log("############################################################");
+            });
             socket.on('simulation-ready', function(data) {
                 console.log(">>>>>>>>>>>>>>>>>>>>>> SIMULATION READY <<<<<<<<<<<<<<<<<<<<");
-                console.log(data)
+                console.log(data);
                 console.log("############################################################");
             });
             socket.on('turn', function(data) {
                 console.log(">>>>>>>>>>>>>>>>>>>>>>>>> TURN <<<<<<<<<<<<<<<<<<<<<<<<");
-                console.log(data)
+                console.log(data);
                 console.log("############################################################");
             });
             socket.on('end-game', function(data) {
                 console.log(">>>>>>>>>>>>>>>>>>>>>> END <<<<<<<<<<<<<<<<<<<<");
-                console.log(data)
+                console.log(data);
                 console.log("############################################################");
             });
         </script>
