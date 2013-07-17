@@ -89,7 +89,13 @@ var SimulationManager = Backbone.Model.extend({
     },
     
     getSimulationList: function() {
-        return _.keys(this.get("simulations"));
+        var simulations = this.get("simulations");
+        var result = [];
+        _.each(_.keys(simulations), function(key){
+            var connected = simulations[key].get("playersConnected");
+            result.push({ simulationId: key, playersConnected: connected});
+        });
+        return result;
     }
 });
 
