@@ -57,7 +57,7 @@ inputServer.get("emitter").on("join-simulation", function(jsonContent, client){
 });
 
 inputServer.get("emitter").on("player-turn", function(jsonContent, client) {
-	console.log("++ Player turn");
+    console.log("++ Player turn");
     var simulationTurn = new SimulationTurn({jsonContent: jsonContent});
     if (simulationTurn.valid()) {
         simulationManager.sendTurn(client, simulationTurn);

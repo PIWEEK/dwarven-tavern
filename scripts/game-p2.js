@@ -10,8 +10,8 @@ socket.connect('9000', 'localhost', function() {
         var dataJSON = JSON.parse(data);
 
         if (dataJSON["type"] == "turn" && sended < 2) {
-        	sended ++;
-        	socket.write(JSON.stringify(require("./send-turn-p2")));
+            sended ++;
+            socket.write(JSON.stringify(require("./send-turn-p2")));
         }
     });
     

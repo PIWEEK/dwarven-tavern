@@ -14,8 +14,8 @@ socket.connect('9000', 'localhost', function() {
             socket.write(JSON.stringify(require("./join-simulation-p1")));
         }
         if (dataJSON["type"] == "turn" && sended < 2) {
-        	sended ++;
-        	socket.write(JSON.stringify(require("./send-turn-p1")));
+            sended ++;
+            socket.write(JSON.stringify(require("./send-turn-p1")));
         }
     });
     socket.write(JSON.stringify(require("./create-simulation")));

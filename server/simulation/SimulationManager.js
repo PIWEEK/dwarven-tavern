@@ -20,7 +20,7 @@ var SimulationManager = Backbone.Model.extend({
     
     createSimulation: function() {
         // var uid = ""+ hat(32,28);
-    	var uid = "6oojlb5";
+        var uid = "6oojlb5";
         
         this.get("simulations")[uid] = new Simulation({
             width: this.get("width"),
@@ -61,8 +61,8 @@ var SimulationManager = Backbone.Model.extend({
         simulation.set("lastId", lastId);
         simulation.set(player, playerData);
         
-    	var clientName = socket.remoteAddress + ":" + socket.remotePort;
-    	this.get("clients")[clientName] = uid;
+        var clientName = socket.remoteAddress + ":" + socket.remotePort;
+        this.get("clients")[clientName] = uid;
         
         if(playersConnected == 2) {
             simulation.set("currentTurn", 0);
@@ -85,10 +85,10 @@ var SimulationManager = Backbone.Model.extend({
     },
     
     getSimulationForClient: function(client) {
-    	var socket = client.get("socket");
-    	var clientName = socket.remoteAddress + ":" + socket.remotePort;
-    	var uid = this.get("clients")[clientName];
-    	return this.get("simulations")[uid];
+        var socket = client.get("socket");
+        var clientName = socket.remoteAddress + ":" + socket.remotePort;
+        var uid = this.get("clients")[clientName];
+        return this.get("simulations")[uid];
     }
 });
 
