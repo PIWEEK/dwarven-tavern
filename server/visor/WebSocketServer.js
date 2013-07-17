@@ -5,7 +5,6 @@ var Backbone = require('backbone'),
     _ = require('underscore');
 
 var WebSocketServer = Backbone.Model.extend({
-
     defaults: {
         port: 8080,
         io: null,

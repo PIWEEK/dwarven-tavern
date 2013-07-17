@@ -85,16 +85,17 @@ var Simulation = Backbone.Model.extend({
                 } 
             }
         });
-        
+
         // Check the barrels and to end the game
         var barrels = this.get("barrels");
+        var teams = this.get("teams");
         
-        if (barrels[0].coords.y == 0) {
+        if (barrels[teams[0]].get("coords").y == 0) {
             this.set("simulationFinished", true);
             this.set("loser", this.get("player1"));
             this.set("winner", this.get("player2"));
         }
-        if (barrels[1].coords.y == this.get("height")-1) {
+        if (barrels[teams[1]].get("coords").y == this.get("height")-1) {
             this.set("simulationFinished", true);
             this.set("winner", this.get("player1"));
             this.set("loser", this.get("player2"));

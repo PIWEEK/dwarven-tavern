@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Test visor</title>
+    </head>
+
+    <body>
+        <h1>Test visor</h1>
+
+        <script src="http://localhost:8080/socket.io/socket.io.js"></script>
+        <script>
+            var socket = io.connect('http://localhost:8080');
+            socket.on('simulation-ready', function(data) {
+                console.log(">>>>>>>>>>>>>>>>>>>>>> SIMULATION READY <<<<<<<<<<<<<<<<<<<<");
+                console.log(data)
+                console.log("############################################################");
+            });
+            socket.on('turn', function(data) {
+                console.log(">>>>>>>>>>>>>>>>>>>>>>>>> TURN <<<<<<<<<<<<<<<<<<<<<<<<");
+                console.log(data)
+                console.log("############################################################");
+            });
+            socket.on('end-game', function(data) {
+                console.log(">>>>>>>>>>>>>>>>>>>>>> END <<<<<<<<<<<<<<<<<<<<");
+                console.log(data)
+                console.log("############################################################");
+            });
+        </script>
+    </body>
+</html>
