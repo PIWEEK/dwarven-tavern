@@ -84,7 +84,7 @@ var runTurn = function(state) {
         var wantedPos = getWantedBarrelPos(myTeamBarrel, deffendingY);
         
         if(isEqualPos(bot.coords, wantedPos)) {
-            actions.push(createActionMoveTo(bot, {x: bot.coords.x, y: targetY}));
+            actions.push(createActionMoveTo(bot, {x: bot.coords.x, y: deffendingY}));
         } else {
             actions.push(createActionMoveTo(bot, wantedPos));
         }
@@ -98,10 +98,10 @@ var runTurn = function(state) {
     opponentBarrel = state["barrels"][opponentTeam]["coords"];
     console.log("BARRILES: %j, %j", myTeamBarrel, opponentBarrel);
     
-    attackers = [ state[myTeam][0], state[myTeam][1], state[myTeam][4] ];
+    attackers = [  ];
     _.each(attackers, executeBotAttacker);
     
-    defenders = [ state[myTeam][2], state[myTeam][3] ];
+    defenders = [ state[myTeam][2], state[myTeam][3], state[myTeam][0], state[myTeam][1], state[myTeam][4] ];
     _.each(defenders, executeBotDefender);
     
     variable = [  ];
@@ -125,12 +125,12 @@ server.on("data", function(data) {
     } else if(message["type"] == "game-info") {
         myTeam = message["team"];
         if(message["team"] == "team1") {
-            targetY = 0;
-            deffendingY = message["height"];
-            opponentTeam = "team2";
-        } else {
             targetY = message["height"];
             deffendingY = 0;
+            opponentTeam = "team2";
+        } else {
+            targetY = 0;
+            deffendingY = message["height"];
             opponentTeam = "team1";
         }
         console.log("TARGET: " + targetY);
