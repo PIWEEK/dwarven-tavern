@@ -1,0 +1,27 @@
+{
+    "name": "dwarven-tabern-dummy-bot",
+    "version": "0.0.1",
+    "description": "",
+    "contributors": [
+        {
+            "name": "Alonso Torres",
+            "email": "alonso.torres@kaleidos.net"
+        },
+        {
+            "name": "Juan Francisco Alcántara",
+            "email": "juanfran.alcantara@kaleidos.net"
+        },
+        {
+            "name": "Miguel de la Cruz",
+            "email": "miguel.delacruz@kaleidos.net"
+        }
+    ],
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/PIWEEK/dwarven-tavern"
+    },
+    "dependencies": {
+        "underscore": "1.5.1"
+    },
+    "license": "MIT"
+}
