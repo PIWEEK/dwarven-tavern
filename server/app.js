@@ -115,7 +115,17 @@ inputServer.start();
 webSocketServer.start(server);
 server.listen(config.httpPort);
 
+expressApp.configure(function() {
+    var resourcesDir = path.resolve(__dirname, "..", 'client');
+
+    expressApp.use('/css', express.static(resourcesDir + '/css'));
+    expressApp.use('/js', express.static(resourcesDir + '/js'));
+    expressApp.use('/fonts', express.static(resourcesDir + '/fonts'));
+    expressApp.use('/imgs', express.static(resourcesDir + '/imgs'));
+    expressApp.use('/sounds', express.static(resourcesDir + '/sounds'));
+});
+
 expressApp.get('/', function(req, res) {
-    var viewsPath = path.resolve(__dirname, "..", 'client', 'test-ws.html');
+    var viewsPath = path.resolve(__dirname, "..", 'client', 'index.html');
     res.sendfile(viewsPath);
 });
