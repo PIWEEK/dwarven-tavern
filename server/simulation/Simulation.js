@@ -20,19 +20,6 @@ var SimulationEventType  = {
     BOT_HIT: 4,
 };
 
-var cloneBotDataList = function(botDataList) {
-    var result = [];
-    
-    _.each(botDataList, function(botData){
-        result.push(new BotData({
-            id: botData.get("id"),
-            name: botData.get("name"),
-            coords: { x: botData.get("coords").x, y: botData.get("coords").y }
-        }));
-    });
-    return result;
-};
-
 var Simulation = Backbone.Model.extend({
     defaults: {
         grid: null,
@@ -229,7 +216,7 @@ var Simulation = Backbone.Model.extend({
                 team: teamId,
                 botId: botData.id
             };
-            bots[botData.get("id")] = botData;
+            bots[botData.get("id")] = botData.cloneData();
         });
         this.get("teams").push(teamId);
         
@@ -238,7 +225,7 @@ var Simulation = Backbone.Model.extend({
             this.set("initial", []);
         }
         if(this.get("initial").length != 2) {
-            this.get("initial").push({teamId: teamId, barrelPos: _.clone(barrelPos), botDataList: cloneBotDataList(botDataList)});
+            this.get("initial").push({teamId: teamId, barrelPos: _.clone(barrelPos), botDataList: botDataList});
         }
     },
     
@@ -473,7 +460,7 @@ if (require.main === module) {
             id: 1,
             name: "Rhun Diamondfighter",
             coords: { x: 18, y: 19 },
-        })/*,
+        }),
         new BotData({
             id: 2,
             name: "Balgairen Marble-Flame",
@@ -493,10 +480,10 @@ if (require.main === module) {
             id: 5,
             name: "Riagan Rubygold",
             coords: { x: 16, y: 18 },
-        })*/
+        })
     ]);
     
-    simulation.setTeam("team2", {x: 19, y: 19}, [/*
+    simulation.setTeam("team2", {x: 19, y: 19}, [
         new BotData({
             id: 6,
             name: "Keenon Bismuth-Fulvous",
@@ -521,40 +508,26 @@ if (require.main === module) {
             id: 10,
             name: "Ceithin Feldspardigger",
             coords: { x: 16, y: 2 },
-        }),
-        new BotData({
-            id: 98,
-            name: "Fulanito de tal",
-            coords: { x: 8, y: 8 },
-        }),
-        new BotData({
-            id: 99,
-            name: "Fulanito de tal II",
-            coords: { x: 8, y: 10 },
-        })*/
+        })
     ]);
     console.log(simulation.toString());
-//    console.log(">> " + simulation.get("simulationFinished"));
 
     simulation.processTurn([
         new BotAction({botId: 1, type: BotAction.Types.MOVE, direction: BotAction.Directions.EAST}),
-//        new BotAction({botId: 2, type: BotAction.Types.MOVE, direction: BotAction.Directions.EAST}),
-//        new BotAction({botId: 3, type: BotAction.Types.MOVE, direction: BotAction.Directions.WEST}),
-//        new BotAction({botId: 4, type: BotAction.Types.MOVE, direction: BotAction.Directions.SOUTH}),
-//        new BotAction({botId: 5, type: BotAction.Types.MOVE, direction: BotAction.Directions.NORTH}),
-//        new BotAction({botId: 6, type: BotAction.Types.MOVE, direction: BotAction.Directions.SOUTH}),
-//        new BotAction({botId: 7, type: BotAction.Types.MOVE, direction: BotAction.Directions.EAST}),
-//        new BotAction({botId: 8, type: BotAction.Types.MOVE, direction: BotAction.Directions.WEST}),
-//        new BotAction({botId: 9, type: BotAction.Types.MOVE, direction: BotAction.Directions.NORTH}),
-//        new BotAction({botId: 10, type: BotAction.Types.MOVE, direction: BotAction.Directions.SOUTH}),
-        
-//        new BotAction({botId: 98, type: BotAction.Types.MOVE, direction: BotAction.Directions.SOUTH}),
+        new BotAction({botId: 2, type: BotAction.Types.MOVE, direction: BotAction.Directions.EAST}),
+        new BotAction({botId: 3, type: BotAction.Types.MOVE, direction: BotAction.Directions.WEST}),
+        new BotAction({botId: 4, type: BotAction.Types.MOVE, direction: BotAction.Directions.SOUTH}),
+        new BotAction({botId: 5, type: BotAction.Types.MOVE, direction: BotAction.Directions.NORTH}),
+        new BotAction({botId: 6, type: BotAction.Types.MOVE, direction: BotAction.Directions.SOUTH}),
+        new BotAction({botId: 7, type: BotAction.Types.MOVE, direction: BotAction.Directions.EAST}),
+        new BotAction({botId: 8, type: BotAction.Types.MOVE, direction: BotAction.Directions.WEST}),
+        new BotAction({botId: 9, type: BotAction.Types.MOVE, direction: BotAction.Directions.NORTH}),
+        new BotAction({botId: 10, type: BotAction.Types.MOVE, direction: BotAction.Directions.SOUTH}),
     ]);
 
-//    console.log("\n\n####################################################################################\n\n");
+    console.log("\n\n####################################################################################\n\n");
     console.log(simulation.toString());
-//    console.log(">> " + simulation.get("simulationFinished"));
-//    console.log(JSON.stringify(simulation.getCurrentState(), undefined, 2));
+    console.log(JSON.stringify(simulation.getCurrentState(), undefined, 2));
     
 //    console.log(JSON.stringify(simulation.getTurnEvents(1), undefined, 2));
     
