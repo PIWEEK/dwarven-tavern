@@ -31,8 +31,9 @@ app.config.createSocket = function() {
 };
 
 app.config.gameListScreen = function() {
+    var view = $("#games");
+
     app.socket.on("simulation-list", function(data){
-        var view = $("#games");
         var html = "";
 
         view.show();
@@ -47,6 +48,8 @@ app.config.gameListScreen = function() {
         view.find("ul").html(html);
         view.find(".watch").on("click", app.config.watch);
     });
+
+    view.find("button").on("click", app.requestCreateSimulation);
 
     app.socket.emit("request-simulation-list");
 };

@@ -15,9 +15,9 @@ app.createGame = function() {
             	app.turns.push(data);
         	});
         });
+
         app.socket.emit("watch-request", {id: app.gameId});
 
-        
         app.play(0);
     });
 
@@ -27,20 +27,24 @@ app.createGame = function() {
     }, 400);
 };
 
+app.requestCreateSimulation = function() {
+    app.socket.emit('request-create-simulation');
+}
+
 app.processTurn = function() {
     if(app.turns.length) {
         app.turn = app.turns.shift();
 
         if(app.firstTurn) {
-                    app.barrel.init();
-                    app.dwarf.init();
+            app.barrel.init();
+            app.dwarf.init();
 
-                    app.stage.add(app.layer);
+            app.stage.add(app.layer);
             app.firstTurn = false;
-                }else{
-                    app.barrel.move();
-                    app.dwarf.move();
-                }
+        }else{
+            app.barrel.move();
+            app.dwarf.move();
+        }
     }
 }
 

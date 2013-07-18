@@ -56,6 +56,10 @@ var WebSocketServer = Backbone.Model.extend({
                 socket.emit('watch-response', '{"type", "ok"}');
             });
 
+            socket.on('request-create-simulation', function() {
+                self.get("emitter").emit('create-simulation', socket);
+            });
+
         });
 
         console.log('===== WebServer started! =====\n++ Listening on ' + this.get("port") + '...');
