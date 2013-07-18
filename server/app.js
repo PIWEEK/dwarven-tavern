@@ -33,7 +33,7 @@ simulationManager.get("emitter").on("simulation-ready", function(simulation){
             nick: simulation.get("player2").get("nick"),
             bots: simulation.get("player2").get("names")
         }
-    });
+    }, simulation.get("id"));
 
     var response = JSON.stringify({ type: "turn", state: simulation.getCurrentState()});
     simulation.get("player1").get("client").get("socket").write(response);
@@ -84,7 +84,7 @@ simulationManager.get("emitter").on("team2-turn", function(simulation){
 simulationManager.get("emitter").on("end-game", function(simulation){
     console.log("++ GAME FINISHED");
 
-    webSocketServer.emitRoom("turn", { type: "turn", messages: simulation.getTurnEvents(), state: simulation.getCurrentState()});
+    webSocketServer.emitRoom("turn", { type: "turn", messages: simulation.getTurnEvents(), state: simulation.getCurrentState()}, simulation.get("id"));
 
     simulationManager.removeSimulation(simulation);
 
@@ -100,7 +100,7 @@ simulationManager.get("emitter").on("end-game", function(simulation){
     webSocketServer.emitRoom("end-game", {
         winner: simulation.get("winner").get("nick"),
         loser: simulation.get("loser").get("nick")
-    });
+    }, simulation.get("id"));
     webSocketServer.emitBroadcast("simulation-list", { serverList: simulationManager.getSimulationList()});
 });
 
