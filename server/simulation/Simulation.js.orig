@@ -29,15 +29,15 @@ var Simulation = Backbone.Model.extend({
         teams: null,
         simulationFinished: false
     },
-    
+
     /**
-     * Initialize the game grid with the heiht/width passed as parameters 
+     * Initialize the game grid with the heiht/width passed as parameters
      */
     initialize: function(){
         var width = this.get("width"),
             height = this.get("height"),
             grid = new Array();
-        
+
         for(var row=0; row<height; row++) {
             grid[row] = new Array();
             for(var col=0; col<width; col++) {
@@ -48,7 +48,7 @@ var Simulation = Backbone.Model.extend({
         this.set("turnEvents", {});
         this.set("teams", []);
     },
-    
+
     getTurnEvents: function(){
         var turn = this.get("currentTurn");
         if(this.get("turnEvents")[turn]) {
@@ -57,16 +57,16 @@ var Simulation = Backbone.Model.extend({
             return [];
         }
     },
-    
+
     addTurnEvent: function(event){
         var turn = this.get("currentTurn");
-        
+
         if(!this.get("turnEvents")[turn]) {
             this.get("turnEvents")[turn] = [];
-        } 
+        }
         this.get("turnEvents")[turn].push(event);
     },
-    
+
     /**
      * Process a turn with the list of actions passed as argument
      * @param actions list of BotAction that the simulation has to execute
@@ -74,36 +74,34 @@ var Simulation = Backbone.Model.extend({
     processTurn: function(actions) {
         var bots = this.get("bots");
         var self = this;
-        
+
         var currentTurn = this.get("currentTurn") + 1;
         this.set("currentTurn", currentTurn);
-        
+
         _.each(actions, function(botAction){
             if (botAction.get("type") === BotAction.Types.MOVE) {
                 if(bots[botAction.get("botId")]) {
                     self.moveBot(bots[botAction.get("botId")], botAction.get("direction"));
-                } 
+                }
             }
         });
 
         // Check the barrels and to end the game
         var barrels = this.get("barrels");
         var teams = this.get("teams");
-        
+
         if (barrels[teams[0]].get("coords").y == 0) {
-            console.log("+++++ FUUUU");
             this.set("simulationFinished", true);
             this.set("loser", this.get("player1"));
             this.set("winner", this.get("player2"));
         }
         if (barrels[teams[1]].get("coords").y == this.get("height")-1) {
-            console.log("+++++ FUUUU");
             this.set("simulationFinished", true);
             this.set("winner", this.get("player1"));
             this.set("loser", this.get("player2"));
         }
     },
-    
+
     /**
      * Returns a String with the representation of the grid (testing only)
      * @returns {String}
@@ -129,7 +127,7 @@ var Simulation = Backbone.Model.extend({
         });
         return state;
     },
-    
+
     /**
      * Returns the representation of the grid
      * @returns {String}
@@ -137,11 +135,11 @@ var Simulation = Backbone.Model.extend({
     getCurrentState: function() {
         var barrels = this.get("barrels"),
             bots = this.get("bots");
-        
+
         var result = {
             barrels: barrels,
         };
-        
+
         _.each(bots, function(botData){
             var team = botData.get("team");
             if(!result[team]) {
@@ -149,10 +147,10 @@ var Simulation = Backbone.Model.extend({
             }
             result[team].push(botData);
         });
-        
+
         return result;
     },
-    
+
     /**
      * Set the team data inside the grid for the beginning of the simulation
      * @param teamId 0/1 for two teams
@@ -163,17 +161,17 @@ var Simulation = Backbone.Model.extend({
         var grid = this.get("grid"),
             bots = this.get("bots"),
             barrels = this.get("barrels");
-        
+
         // Set barrel data inside the simulator
         var barrelData = new BarrelData({ team: teamId, coords: barrelPos });
         grid[barrelPos.y][barrelPos.x] = { state: GridCellState.BARREL, team: teamId };
         barrels[teamId] = barrelData;
-        
+
         // Start position for the different bots
         _.each(botDataList, function(botData){
             botData.set("team", teamId);
-            grid[botData.get("coords").y][botData.get("coords").x] = { 
-                state: GridCellState.BOT, 
+            grid[botData.get("coords").y][botData.get("coords").x] = {
+                state: GridCellState.BOT,
                 team: teamId,
                 botId: botData.id
             };
@@ -181,87 +179,87 @@ var Simulation = Backbone.Model.extend({
         });
         this.get("teams").push(teamId);
     },
-    
+
     /**
      * Move the selected bot inside the grid simulation
      * @param botData
      * @param direction
      */
     moveBot: function(botData, direction) {
-        var grid = this.get("grid"), 
-            width = this.get("width"), 
+        var grid = this.get("grid"),
+            width = this.get("width"),
             height = this.get("height"),
             bots = this.get("bots"),
             teamId = botData.get("team"),
             botId = botData.get("id");
-        
+
         var oldCoords = botData.get("coords"),
             newCoords = { x: oldCoords.x, y: oldCoords.y };
-        
+
         switch(direction) {
             case BotAction.Directions.NORTH:
                 newCoords.y -= 1;
                 if (newCoords.y < 0) newCoords.y = 0;
                 break;
-                
+
             case BotAction.Directions.SOUTH:
                 newCoords.y += 1;
                 if (newCoords.y >= height) newCoords.y = height-1;
                 break;
-                
+
             case BotAction.Directions.EAST:
                 newCoords.x += 1;
                 if (newCoords.x >= width) newCoords.x = width-1;
-                
+
                 break;
-                
+
             case BotAction.Directions.WEST:
                 newCoords.x -= 1;
                 if (newCoords.x < 0) newCoords.x = 0;
                 break;
         }
-        
+
         this.addTurnEvent({type: SimulationEventType.BOT_MOVE, message: botData.get("name") + " moves toward " + direction});
-        
+
         // TODO: We should check conflicts
-        
+
         // We empty the old grid data
-        grid[oldCoords.y][oldCoords.x] = { 
-            state: GridCellState.EMPTY 
+        grid[oldCoords.y][oldCoords.x] = {
+            state: GridCellState.EMPTY
         };
-        
+
         if(grid[newCoords.y][newCoords.x].state == GridCellState.BARREL){
             this.moveBarrel(newCoords, direction);
-            
+
             if(grid[newCoords.y][newCoords.x].state != GridCellState.EMPTY){
                 // If we are unable to move the barrel, we stay in the same coord
                 newCoords = oldCoords;
-            } 
-            
+            }
+
         } else if(grid[newCoords.y][newCoords.x].state == GridCellState.BOT){
             this.hitBot(bots[grid[newCoords.y][newCoords.x].botId], direction);
             if(grid[newCoords.y][newCoords.x].state != GridCellState.EMPTY){
                 newCoords = oldCoords;
             }
         }
-        
-        grid[newCoords.y][newCoords.x] = { 
-            state: GridCellState.BOT, 
+
+        grid[newCoords.y][newCoords.x] = {
+            state: GridCellState.BOT,
             team: teamId,
             botId: botId
         };
         // Update the bot data with the new coords
         botData.set("coords", newCoords);
     },
-    
+
     /**
      * Move the barrel inside the grid simulation
      * @param botData
      * @param direction
      */
     moveBarrel: function(barrelCoords, direction) {
-        var grid = this.get("grid"), 
-            width = this.get("width"), 
+        var grid = this.get("grid"),
+            width = this.get("width"),
             height = this.get("height"),
             bots = this.get("bots"),
             barrels = this.get("barrels"),
@@ -269,134 +267,139 @@ var Simulation = Backbone.Model.extend({
             oldCoords = barrelCoords,
             newCoords = { x: oldCoords.x, y: oldCoords.y },
             teamId = grid[oldCoords.y][oldCoords.x].team;
-        
+
         switch(direction) {
             case BotAction.Directions.NORTH:
                 newCoords.y -= 1;
                 if(teamId == teams[1]) {
-                	if (newCoords.y < 1) newCoords.y = 1;
+                    if (newCoords.y < 1) newCoords.y = 1;
                 } else {
-                	if (newCoords.y < 0) newCoords.y = 0;
+                    if (newCoords.y < 0) newCoords.y = 0;
                 }
                 break;
-                
+
             case BotAction.Directions.SOUTH:
                 newCoords.y += 1;
-                
+
                 if(teamId == teams[0]) {
-                	if (newCoords.y > height-2) newCoords.y = height-2;
+                    if (newCoords.y > height-2) newCoords.y = height-2;
                 } else {
-                	if (newCoords.y > height-1) newCoords.y = height-1;
+                    if (newCoords.y > height-1) newCoords.y = height-1;
                 }
                 break;
-                
+
             case BotAction.Directions.EAST:
                 newCoords.x += 1;
                 if (newCoords.x > width-2) newCoords.x = width-2;
-                
+
                 break;
-                
+
             case BotAction.Directions.WEST:
                 newCoords.x -= 1;
                 if (newCoords.x < 1) newCoords.x = 1;
                 break;
         }
-        
+
         this.addTurnEvent({type: SimulationEventType.BOT_MOVE, message: "Barrel of " + teamId + " moves toward " + direction});
 
         grid[oldCoords.y][oldCoords.x] = { state: GridCellState.EMPTY };
-        
+
         if(grid[newCoords.y][newCoords.x].state == GridCellState.BARREL) {
             newCoords = oldCoords;
         } else if(grid[newCoords.y][newCoords.x].state == GridCellState.BOT) {
             this.hitBot(bots[grid[newCoords.y][newCoords.x].botId], direction);
-            
+
             if(grid[newCoords.y][newCoords.x].state != GridCellState.EMPTY){
                 // If we are unable to "clean" de space, we stay where we were
                 newCoords = oldCoords;
-            } 
+            }
         }
-        
-        grid[newCoords.y][newCoords.x] = { 
-            state: GridCellState.BARREL, 
-            team: teamId 
+
+        grid[newCoords.y][newCoords.x] = {
+            state: GridCellState.BARREL,
+            team: teamId
         };
         barrels[teamId].set("coords", {x: newCoords.x, y: newCoords.y});
     },
-    
+
     /**
      * Method invoked when a barrel hits a bot. We resolve the conflicts inside the grid
      * @param botData
      * @param direction
      */
     hitBot: function(botData, direction) {
-        var grid = this.get("grid"), 
-            width = this.get("width"), 
+        var grid = this.get("grid"),
+            width = this.get("width"),
             height = this.get("height"),
             bots = this.get("bots"),
             teamId = botData.get("team"),
             botId = botData.get("id");
+<<<<<<< Updated upstream
         
         this.addTurnEvent({type: SimulationEventType.BARREL_HIT, message: botData.get("name") +  " was hit!!"});
+=======
+
+        this.addTurnEvent({type: SimulationEventType.BARREL_HIT, message: "Barrel of team" + (teamId+1) + " hit " + botData.get("name")});
+>>>>>>> Stashed changes
 
         var oldCoords = botData.get("coords"),
             newCoords = { x: oldCoords.x, y: oldCoords.y };
-        
+
         var kindOfHit = Math.floor(Math.random()*3);
-    
+
         switch(direction) {
             case BotAction.Directions.NORTH:
                 newCoords.y -= 1;
-                if(kindOfHit == 0) { newCoords.x -= 1; } 
-                else if (kindOfHit == 1) { newCoords.y -= 1; } 
+                if(kindOfHit == 0) { newCoords.x -= 1; }
+                else if (kindOfHit == 1) { newCoords.y -= 1; }
                 else { newCoords.x += 1; }
                 break;
-                
+
             case BotAction.Directions.SOUTH:
                 newCoords.y += 1;
-                if(kindOfHit == 0) { newCoords.x -= 1; } 
-                else if (kindOfHit == 1) { newCoords.y += 1; } 
+                if(kindOfHit == 0) { newCoords.x -= 1; }
+                else if (kindOfHit == 1) { newCoords.y += 1; }
                 else { newCoords.x += 1; }
                 break;
-                
+
             case BotAction.Directions.EAST:
                 newCoords.x += 1;
-                if(kindOfHit == 0) { newCoords.y -= 1; } 
-                else if (kindOfHit == 1) { newCoords.x += 1; } 
+                if(kindOfHit == 0) { newCoords.y -= 1; }
+                else if (kindOfHit == 1) { newCoords.x += 1; }
                 else { newCoords.y += 1; }
                 break;
-                
+
             case BotAction.Directions.WEST:
                 newCoords.x -= 1;
-                if(kindOfHit == 0) { newCoords.y -= 1; } 
-                else if (kindOfHit == 1) { newCoords.x -= 1; } 
+                if(kindOfHit == 0) { newCoords.y -= 1; }
+                else if (kindOfHit == 1) { newCoords.x -= 1; }
                 else { newCoords.y += 1; }
                 break;
         }
-        
+
         if (newCoords.y < 0) newCoords.y = 0;
         if (newCoords.y >= height-1) newCoords.y = height-2;
-        if (newCoords.x >= width-1) newCoords.x = width-2;                
+        if (newCoords.x >= width-1) newCoords.x = width-2;
         if (newCoords.x < 1) newCoords.x = 1;
-        
+
         grid[oldCoords.y][oldCoords.x] = { state: GridCellState.EMPTY };
-        
+
         if(grid[newCoords.y][newCoords.x].state == GridCellState.BARREL){
             this.moveBarrel(newCoords, direction);
             if(grid[newCoords.y][newCoords.x].state != GridCellState.EMPTY){
                 // If we are unable to move the barrel, we stay in the same coord
                 newCoords = oldCoords;
-            } 
+            }
         } else if(grid[newCoords.y][newCoords.x].state == GridCellState.BOT){
             this.hitBot(bots[grid[newCoords.y][newCoords.x]["botId"]], direction);
             if(grid[newCoords.y][newCoords.x].state != GridCellState.EMPTY){
                 // If we are unable to move the barrel, we stay in the same coord
                 newCoords = oldCoords;
-            } 
+            }
         }
-        
-        grid[newCoords.y][newCoords.x] = { 
-            state: GridCellState.BOT, 
+
+        grid[newCoords.y][newCoords.x] = {
+            state: GridCellState.BOT,
             team: teamId,
             botId: botId
         };
@@ -407,7 +410,7 @@ var Simulation = Backbone.Model.extend({
 
 if (require.main === module) {
     var simulation = new Simulation({width: 21, height: 21});
-    
+
     simulation.setTeam("team1", {x: 8, y: 9}, [
         new BotData({
             id: 1,
@@ -435,7 +438,7 @@ if (require.main === module) {
             coords: { x: 16, y: 18 },
         })*/
     ]);
-    
+
     simulation.setTeam("team2", {x: 19, y: 19}, [/*
         new BotData({
             id: 6,
@@ -487,7 +490,7 @@ if (require.main === module) {
 //        new BotAction({botId: 8, type: BotAction.Types.MOVE, direction: BotAction.Directions.WEST}),
 //        new BotAction({botId: 9, type: BotAction.Types.MOVE, direction: BotAction.Directions.NORTH}),
 //        new BotAction({botId: 10, type: BotAction.Types.MOVE, direction: BotAction.Directions.SOUTH}),
-        
+
 //        new BotAction({botId: 98, type: BotAction.Types.MOVE, direction: BotAction.Directions.SOUTH}),
     ]);
 
@@ -495,9 +498,9 @@ if (require.main === module) {
     console.log(simulation.toString());
     console.log(">> " + simulation.get("simulationFinished"));
 //    console.log(JSON.stringify(simulation.getCurrentState(), undefined, 2));
-    
+
 //    console.log(JSON.stringify(simulation.getTurnEvents(1), undefined, 2));
-    
+
 }
 
 module.exports = Simulation;

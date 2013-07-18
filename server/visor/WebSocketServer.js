@@ -51,9 +51,8 @@ var WebSocketServer = Backbone.Model.extend({
                 self.set("rooms", rooms);
                 console.log('>>> Tras añadirlo, tenemos');
                 console.log(' >> rooms: ' + _.keys(self.get("rooms")));
-                //console.log(' >> ' + this.get("rooms")[0]);
 
-                socket.emit('watch-response', '{"type", "ok"}');
+                self.get("emitter").emit('simulation-initial-status', data.id, socket);
             });
 
             socket.on('request-create-simulation', function() {
