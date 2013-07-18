@@ -133,6 +133,9 @@ var joinSimulation = function() {
     server.write(JSON.stringify(joinMessage));
 };
 
+// Bot connects to the server
+server = net.connect({port: 9000}, joinSimulation);
+
 /*
  * MAIN LOOP 
  */
@@ -174,4 +177,4 @@ server.on("end", function() {
     console.log("END");
 });
 
-server = net.connect({port: 9000}, joinSimulation);
+
