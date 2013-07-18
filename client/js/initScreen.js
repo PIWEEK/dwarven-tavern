@@ -1,3 +1,5 @@
+"use strict";
+
 app.config = {};
 
 app.config.init = function(){
@@ -88,7 +90,7 @@ $(window).on("keydown", function(e){
         $("#logo")
             .attr({
                 "width": 1000,
-                "src": "https://lh6.googleusercontent.com/ZTXxEH7N0tYh49K_okYfRu411cP_iClqLvGMVa-o9sCuRJjjNqurL-oiW5Bxl0nnFA=w1600"
+                "src": "http://bit.ly/13mRJsj"
             });
     }
 });

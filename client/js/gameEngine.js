@@ -1,8 +1,11 @@
+"use strict";
+
 app.gameEngine = (function() {
     var firstTurn = true;
     var endedGame = false;
     var scores = {"team1": 0, "team2": 0};
     var pointsToWin = null;
+    var interval = null;
 
     var createGame = function() {
         $("#game").show();

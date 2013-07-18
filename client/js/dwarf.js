@@ -1,3 +1,5 @@
+"use strict";
+
 //team 1 bottom dwarfs
 //team 2 top dwarfs
 

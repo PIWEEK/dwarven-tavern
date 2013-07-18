@@ -1,3 +1,5 @@
+"use strict";
+
 app.sounds = {
     attack: [
         "attack-1.ogg",
@@ -99,7 +101,7 @@ app.play = function(key){
         break;
 
         case 130:
-        //crazy
-        playSound(app.sounds.crazy); 
+        //crazy & low moral
+        playSound(app.sounds.crazy.concat(app.sounds.lowMoral)); 
     }
 };

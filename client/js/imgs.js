@@ -1,3 +1,5 @@
+"use strict";
+
 app.imgs = [
     {"key": "barrelteam1", "url": 'imgs/barrel-team1.png'},
     {"key": "barrelteam2", "url": 'imgs/barrel-team2.png'},
