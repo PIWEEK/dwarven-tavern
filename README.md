@@ -376,7 +376,7 @@ http://localhost:8080
 
 # Acknowledgements
 
-This game was developed during the stunning and breathtaking [Kaleidos ΠWEEK](http://piweek.es), and **we won!** This wouldn't be possible without the time and resources of [Kaleidos Open Source](http://kaleidos.net). Thank you!
+This game was developed during the stunning and breathtaking [Kaleidos IV ΠWEEK (July 2013)](http://piweek.es), and (until the opposite is proved) **we won!** This wouldn't be possible without the time and resources of [Kaleidos Open Source](http://kaleidos.net). Thank you!
 
 
 ![Kaleidos ΠWEEK](https://raw.github.com/PIWEEK/dwarven-tavern/master/client/imgs/PIWEEK_logo.png)
