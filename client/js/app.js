@@ -11,7 +11,11 @@ app.createGame = function() {
 
     app.loadImgs().done(function(){
         app.socket.on('watch-response', function (data) {
-            app.turns.push(data);
+            app.turn = data;
+
+            app.dwarf.init();
+            app.barrel.init();
+            app.stage.add(app.layer);
 
         	app.socket.on('turn', function (data) {
             	app.turns.push(data);
@@ -20,17 +24,19 @@ app.createGame = function() {
 
         app.play(100);
         app.socket.emit("watch-request", {id: app.gameId});
-    });
 
-    //turn every 400ms
-    setInterval(function() {
-        app.processTurn();
-    }, 400);
+        //turn every 400ms
+        setInterval(function() {
+            app.processTurn();
+        }, 400);
+    });
 };
 
 app.requestCreateSimulation = function() {
     app.socket.emit('request-create-simulation');
 }
+
+app.firstTurn = true;
 
 app.processTurn = function() {
     if(app.turns.length) {

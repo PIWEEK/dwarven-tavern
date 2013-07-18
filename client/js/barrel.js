@@ -23,27 +23,31 @@ app.barrel = (function () {
 
     var initBarrelTeam1 = function(){
         var barrel = app.turn.state.barrels.team1.coords;
-        console.log(app.imgs)
+
         barrelTeam1.sprite = createBarrelSprite(barrel.x, barrel.y, app.img.barrelteam1);
         
         app.layer.add(barrelTeam1.sprite);
+
         barrelTeam1.sprite.start();
     };
 
     var initBarrelTeam2 = function(){
-        if (app.turn.state.barrels.team2) {
         var barrel = app.turn.state.barrels.team2.coords;
 
         barrelTeam2.sprite = createBarrelSprite(barrel.x, barrel.y, app.img.barrelteam2);
         
         app.layer.add(barrelTeam2.sprite);
         barrelTeam2.sprite.start();
-        }
     }
 
     var initBarrels = function(){
-        initBarrelTeam1();
-        initBarrelTeam2();
+        if (app.turn.state.barrels.team1 && !barrelTeam1.sprite) {
+            initBarrelTeam1();
+        }
+
+        if (app.turn.state.barrels.team2 && !barrelTeam2.sprite) {
+            initBarrelTeam2();
+        }
     };
 
     var moveBarrel = function(position, barrel){
@@ -68,27 +72,19 @@ app.barrel = (function () {
     var moveTeam1Barrels = function(){
         var barrel = app.turn.state.barrels.team1.coords;
 
-        if(barrelTeam1.sprite === undefined) {
-            initBarrelTeam1(barrel.x, barrel.y);
-        } else {
-            moveBarrel(barrel, barrelTeam1);
-            
-            barrelTeam1.x = barrel.x;
-            barrelTeam1.y = barrel.y;
-        }
+        moveBarrel(barrel, barrelTeam1);
+        
+        barrelTeam1.x = barrel.x;
+        barrelTeam1.y = barrel.y;
     };
 
     var moveTeam2Barrels = function(){
         var barrel = app.turn.state.barrels.team2.coords;
 
-        if(barrelTeam2.sprite === undefined) {
-            initBarrelTeam2(barrel.x, barrel.y);
-        } else {
-            moveBarrel(barrel, barrelTeam2);
-            
-            barrelTeam2.x = barrel.x;
-            barrelTeam2.y = barrel.y;
-        }
+        moveBarrel(barrel, barrelTeam2);
+        
+        barrelTeam2.x = barrel.x;
+        barrelTeam2.y = barrel.y;
     }
 
     var moveBarrels = function(){

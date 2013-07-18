@@ -30,6 +30,8 @@ app.dwarf = (function () {
     };
 
     var dwarfs = [];
+    var team1Loaded = false;
+    var team2Loaded = false;
 
     var printDwarf = function(id, xGrid, yGrid, direction, image) {
         var position = app.grid.getXYGrid(xGrid, yGrid);
@@ -57,6 +59,8 @@ app.dwarf = (function () {
                 return dwarfs[i];
             }
         }
+
+        return false;
     };
 
     var initTeam = function(team, direction, teamImage) {
@@ -71,16 +75,16 @@ app.dwarf = (function () {
         initTeam(dwarfsTeam1, "top", app.img.team1);
 
         app.history.team1 = dwarfsTeam1;
+        team1Loaded = true;
     };
 
     var initTeam2 = function() {
-        if (app.turn.state.team2) {
-            var dwarfsTeam2 = app.turn.state.team2;
+        var dwarfsTeam2 = app.turn.state.team2;
 
-            initTeam(dwarfsTeam2, "bottom", app.img.team2);
+        initTeam(dwarfsTeam2, "bottom", app.img.team2);
 
-            app.history.team2 = dwarfsTeam2;
-        }
+        app.history.team2 = dwarfsTeam2;
+        team2Loaded = true;
     };
 
     var moveDward = function(dwarfNew, direction) {
@@ -145,8 +149,13 @@ app.dwarf = (function () {
     };
 
     var initDwarfs = function() {
-        initTeam1();
-        initTeam2();
+        if(app.turn.state.team1 && !team1Loaded) {
+            initTeam1();
+        }
+        
+        if(app.turn.state.team2 && !team2Loaded) {
+            initTeam2();
+        }
     };
 
     var moveDwarfs = function() {

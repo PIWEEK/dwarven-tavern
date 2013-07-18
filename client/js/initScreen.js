@@ -41,9 +41,13 @@ app.config.gameListScreen = function() {
 
         for(var i = 0; i < data.serverList.length; i++) {
             html += "<li>" + data.serverList[i].simulationId +
-                " (" + data.serverList[i].playersConnected+")" +
-                "<span data-id='" + data.serverList[i].simulationId +"' class='watch'>Go!</span>"+
-                "</li>";
+                " (" + data.serverList[i].playersConnected+")";
+            
+            if(data.serverList[i].playersConnected > 0) {
+                html += "<span data-id='" + data.serverList[i].simulationId +"' class='watch'>Go!</span>";
+            }
+            
+            html += "</li>";
         }
 
         view.find("ul").html(html);
