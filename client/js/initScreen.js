@@ -54,7 +54,7 @@ app.config.gameListScreen = function() {
         view.find(".watch").on("click", app.config.watch);
     });
 
-    view.find("button").on("click", app.requestCreateSimulation);
+    view.find("button").on("click", app.gameEngine.requestCreateSimulation);
 
     app.socket.emit("request-simulation-list");
 };
@@ -76,6 +76,6 @@ app.config.ipScreen = function(){
 
 app.config.watch = function(e) {
     app.gameId = $(e.currentTarget).data("id");
-    app.createGame();
     $("#games").remove();
+    app.gameEngine.create();
 };
