@@ -10,7 +10,9 @@ app.createGame = function() {
     app.layer = new Kinetic.Layer();
 
     app.loadImgs().done(function(){
-        app.socket.on('watch-response', function () {
+        app.socket.on('watch-response', function (data) {
+            app.turns.push(data);
+
         	app.socket.on('turn', function (data) {
             	app.turns.push(data);
         	});

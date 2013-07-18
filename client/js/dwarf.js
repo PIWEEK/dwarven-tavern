@@ -10,22 +10,22 @@ app.dwarf = (function () {
         "walktop": [
             { x: 0, y: 96, width: 29, height: 32},
             { x: 33, y: 96, width: 29, height: 32},
-            { x: 66, y: 96, width: 29, height: 32}            
+            { x: 66, y: 96, width: 29, height: 32}
         ],
         "walkbottom": [
             { x: 0, y: 0, width: 29, height: 32},
             { x: 33, y: 0, width: 29, height: 32},
-            { x: 66, y: 0, width: 29, height: 32}            
+            { x: 66, y: 0, width: 29, height: 32}
         ],
         "walkleft": [
             { x: 0, y: 32, width: 29, height: 32},
             { x: 33, y: 32, width: 29, height: 32},
-            { x: 66, y: 32, width: 29, height: 32}            
+            { x: 66, y: 32, width: 29, height: 32}
         ],
         "walkright": [
             { x: 0, y: 64, width: 29, height: 32},
             { x: 33, y: 64, width: 29, height: 32},
-            { x: 66, y: 64, width: 29, height: 32}            
+            { x: 66, y: 64, width: 29, height: 32}
         ]
     };
 
@@ -74,11 +74,13 @@ app.dwarf = (function () {
     };
 
     var initTeam2 = function() {
-        var dwarfsTeam2 = app.turn.state.team2;
+        if (app.turn.state.team2) {
+            var dwarfsTeam2 = app.turn.state.team2;
 
-        initTeam(dwarfsTeam2, "bottom", app.img.team2);
+            initTeam(dwarfsTeam2, "bottom", app.img.team2);
 
-        app.history.team2 = dwarfsTeam2;
+            app.history.team2 = dwarfsTeam2;
+        }
     };
 
     var moveDward = function(dwarfNew, direction) {
@@ -89,7 +91,7 @@ app.dwarf = (function () {
         var newPosition = app.grid.getXYGrid(dwarfNew.coords.x, dwarfNew.coords.y);
 
         var tween = new Kinetic.Tween({
-            node: dwarf.sprite, 
+            node: dwarf.sprite,
             duration: 0.3,
             x: newPosition.x,
             y: newPosition.y,
@@ -118,7 +120,7 @@ app.dwarf = (function () {
                     }
                 }
             }
-        }        
+        }
     };
 
     var moveTeam1 = function() {

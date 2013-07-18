@@ -23,22 +23,35 @@ app.barrel = (function () {
 
     var initBarrelTeam1 = function(){
         var barrel = app.turn.state.barrels.team1.coords;
+<<<<<<< Updated upstream
         console.log(app.imgs)
         barrelTeam1.sprite = createBarrelSprite(barrel.x, barrel.y, app.img.barrelteam1);
         
+=======
+
+        barrelTeam1.sprite = createBarrelSprite(barrel.x, barrel.y);
+
+>>>>>>> Stashed changes
         app.layer.add(barrelTeam1.sprite);
         barrelTeam1.sprite.start();
     };
 
     var initBarrelTeam2 = function(){
         if (app.turn.state.barrels.team2) {
-        var barrel = app.turn.state.barrels.team2.coords;
+            var barrel = app.turn.state.barrels.team2.coords;
 
+            barrelTeam2.sprite = createBarrelSprite(barrel.x, barrel.y);
+
+<<<<<<< Updated upstream
         barrelTeam2.sprite = createBarrelSprite(barrel.x, barrel.y, app.img.barrelteam2);
         
         app.layer.add(barrelTeam2.sprite);
         barrelTeam2.sprite.start();
+=======
+            app.layer.add(barrelTeam2.sprite);
+            barrelTeam2.sprite.start();
         }
+>>>>>>> Stashed changes
     }
 
     var initBarrels = function(){
@@ -56,7 +69,7 @@ app.barrel = (function () {
         var newPosition = app.grid.getXYGrid(position.x, position.y);
 
         var tween = new Kinetic.Tween({
-            node: barrel.sprite, 
+            node: barrel.sprite,
             duration: 0.3,
             x: newPosition.x,
             y: newPosition.y
@@ -72,7 +85,7 @@ app.barrel = (function () {
             initBarrelTeam1(barrel.x, barrel.y);
         } else {
             moveBarrel(barrel, barrelTeam1);
-            
+
             barrelTeam1.x = barrel.x;
             barrelTeam1.y = barrel.y;
         }
@@ -85,7 +98,7 @@ app.barrel = (function () {
             initBarrelTeam2(barrel.x, barrel.y);
         } else {
             moveBarrel(barrel, barrelTeam2);
-            
+
             barrelTeam2.x = barrel.x;
             barrelTeam2.y = barrel.y;
         }

@@ -39,6 +39,20 @@ simulationManager.get("emitter").on("simulation-ready", function(simulation){
     simulation.get("player1").get("client").get("socket").write(response);
 });
 
+webSocketServer.get("emitter").on("simulation-initial-status", function(simulationId, socket) {
+    var response = {};
+
+    if (simulationManager.hasSimulation(simulationId)) {
+        var simulation = simulationManager.get("simulations")[simulationId];
+        response.type = "ok";
+        response.state = simulation.getCurrentState();
+    } else {
+        response.type = "error";
+    }
+
+    socket.emit('watch-response', response);
+});
+
 simulationManager.get("emitter").on("team1-turn", function(simulation){
     console.log(">> Player 1 has played");
     console.log("\n##################################################\n");
