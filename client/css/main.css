@@ -18,6 +18,10 @@ body {
 
 p, h2, li { color: #FFF; }
 
+.hide {
+    display: none;
+}
+
 #logo {
     margin: 0 auto;
     display: block;
@@ -26,14 +30,33 @@ p, h2, li { color: #FFF; }
 
 #game {
     display: none;
+    margin: 0 auto;
+    width: 972px;
 }
 
 #container {
     height: 672px;
-    margin: 0 auto;
     width: 672px;
     background: url("../imgs/ground.png");
     background-size: 55px;
+    float: left;
+}
+
+#msgs {
+    float: left;
+    width: 300px;
+}
+
+#msgs ul {
+    background-color: #000;
+    padding: 15px;
+    height: 642px;
+    overflow: auto;
+    box-sizing: border-box;
+}
+
+#msgs li {
+    margin-bottom: 15px;
 }
 
 h2 { 

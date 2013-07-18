@@ -62,12 +62,6 @@ app.play = function(key){
     };
 
     switch(key){
-        case 0: 
-        //app start
-        playSound(app.sounds.joy.concat(app.sounds.greetings));
-        
-        break;
-
         case 1: 
         //attack
         playSound(app.sounds.attack);
@@ -86,19 +80,25 @@ app.play = function(key){
         
         break;
 
-        case 10: 
+        case 100: 
+        //app start
+        playSound(app.sounds.joy.concat(app.sounds.greetings));
+        
+        break;
+
+        case 110: 
         //attack me
         playSound(app.sounds.death.concat(app.sounds.healing, app.sounds.pain));
         
         break;
 
-        case 11: 
+        case 120: 
         //-1
         playSound(app.sounds.lowMoral);
         
         break;
 
-        case 12:
+        case 130:
         //crazy
         playSound(app.sounds.crazy); 
     }

@@ -19,7 +19,7 @@ app.createGame = function() {
             app.turns.push(data);
         });
 
-        app.play(0);
+        app.play(100);
     });
 
     //turn every 400ms
@@ -35,12 +35,14 @@ app.processTurn = function() {
         if(app.firstTurn) {
             app.barrel.init();
             app.dwarf.init();
+            app.msgs.update();
 
             app.stage.add(app.layer);
             app.firstTurn = false;
         }else{
             app.barrel.move();
             app.dwarf.move();
+            app.msgs.update();
         }
     }
 }
