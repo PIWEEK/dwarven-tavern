@@ -74,19 +74,29 @@ simulationManager.get("emitter").on("team2-turn", function(simulation){
     webSocketServer.emitRoom("turn", { type: "turn", messages: simulation.getTurnEvents(), state: simulation.getCurrentState()}, simulation.get("id"));
 
     var response = JSON.stringify({ type: "turn", state: simulation.getCurrentState()});
-    try {
-        simulation.get("player1").get("client").get("socket").write(response);
-    } catch (exception){
-        console.log(" - " + exception);
-    }
+    simulation.get("player1").get("client").get("socket").write(response);
 });
+
+simulationManager.get("emitter").on("new-turn", function(simulation, playerToPlay){
+    console.log(">> New Turn");
+    console.log("\n##################################################\n");
+    console.log(simulation.toString());
+    console.log("\n##################################################\n");
+
+    webSocketServer.emitRoom("turn", { type: "turn", messages: simulation.getTurnEvents(), state: simulation.getCurrentState()}, simulation.get("id"));
+
+    var response = JSON.stringify({ type: "turn", state: simulation.getCurrentState()});
+    simulation.get(playerToPlay).get("client").get("socket").write(response);
+});
+
 
 simulationManager.get("emitter").on("player-score", function(simulation, team){
     var message = { type: "score", team: team };
     
     simulation.get("player1").get("client").get("socket").write(JSON.stringify(message));
     simulation.get("player2").get("client").get("socket").write(JSON.stringify(message));
-    
+
+    webSocketServer.emitRoom("turn", { type: "turn", messages: simulation.getTurnEvents(), state: simulation.getCurrentState()}, simulation.get("id"));
     webSocketServer.emitRoom("player-score", { type: "player-score", team: team }, simulation.get("id"));
 });
 

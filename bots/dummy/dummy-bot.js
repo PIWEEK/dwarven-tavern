@@ -140,7 +140,7 @@ server = net.connect({port: 9000}, joinSimulation);
  * MAIN LOOP 
  */
 server.on("data", function(data) {
-     console.log(">> " + data);
+    // console.log(">> " + data);
     var message = JSON.parse(data);
 
     if(message["type"] == "turn") {

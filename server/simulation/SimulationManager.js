@@ -102,22 +102,24 @@ var SimulationManager = Backbone.Model.extend({
             var newSc1 = simulation.get("scorePlayer1"),
                 newSc2 = simulation.get("scorePlayer2");
 
-            if(!simulation.get("simulationFinished") && simulation.get("currentTurn") % 2 == 1) {
+            var playerToPlay = "player1";
+            if(newSc1 > oldSc1) {
+                this.get("emitter").emit("player-score", simulation, simulation.get("teams")[0]);
+                playerToPlay = "player2";
+            } else if (newSc2 > oldSc2) {
+                this.get("emitter").emit("player-score", simulation, simulation.get("teams")[1]);
+                playerToPlay = "player1";
+            } else if(!simulation.get("simulationFinished") && simulation.get("currentTurn") % 2 == 1) {
                 this.get("emitter").emit("team1-turn", simulation);
             } else if(!simulation.get("simulationFinished") && simulation.get("currentTurn") % 2 == 0) {
                 this.get("emitter").emit("team2-turn", simulation);
-            }
-            
-            if(newSc1 > oldSc1) {
-                this.get("emitter").emit("player-score", simulation, simulation.get("teams")[0]);
-            } else if (newSc2 > oldSc2) {
-                this.get("emitter").emit("player-score", simulation, simulation.get("teams")[1]);
             }
             
             if(simulation.get("simulationFinished")) {
                 this.get("emitter").emit("end-game", simulation);
             } else if(newSc1 !== oldSc1 || newSc2 !== oldSc2) {
                 simulation.restart();
+                this.get("emitter").emit("new-turn", simulation, playerToPlay);
             }
         }
     },
