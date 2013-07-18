@@ -12,7 +12,7 @@ app.createGame = function() {
     app.loadImgs().done(function(){
         app.socket.on('watch-response', function (data) {
             app.turn = data;
-
+            
             app.dwarf.init();
             app.barrel.init();
             app.stage.add(app.layer);
@@ -22,52 +22,88 @@ app.createGame = function() {
         	});
 
         	app.socket.on('end-game', function (data) {
-                app.endGameData = data;
+                app.endedGame = true;
+                app.turns.push(data);
         	});
 
         	app.socket.on('player-score', function (data) {
-                app.endGameData = data;
+                app.turns.push(data);
         	});
         });
 
         app.play(100);
         app.socket.emit("watch-request", {id: app.gameId});
 
-        //turn every 400ms
-        setInterval(function() {
-            app.processTurn();
-        }, 400);
+        app.createInterval();
     });
+};
+
+app.endedGame = false;
+
+app.createInterval = function() {
+    //turn every 400ms
+    app.interval = setInterval(function() {
+        app.processTurn();
+    }, 400);
 };
 
 app.requestCreateSimulation = function() {
     app.socket.emit('request-create-simulation');
 }
 
-app.endGame = function() {
+app.finishTheGame = function() {
+    clearInterval(app.interval);
+    app.showScores();
+};
+
+app.showScores = function() {
+    $("#team1-dwarf .points").text(app.scores.team1);
+    $("#team2-dwarf .points").text(app.scores.team2);
+
     $("#dwarf-score").fadeIn();
 };
+
+app.scores = {"team1": 0, "team2": 0};
 
 app.firstTurn = true;
 
 app.processTurn = function() {
     if(app.turns.length) {
         app.turn = app.turns.shift();
+        console.log(app.turn)
+        if(app.turn.winner && app.turn.loser) {
+            app.finishTheGame();
+        } else if(app.turn.type === "player-score") {
+            clearInterval(app.interval);
 
-        if(app.firstTurn) {
-            app.barrel.init();
-            app.dwarf.init();
-            app.msgs.update();
+            if(app.turn.team === "team1") {
+                app.scores.team1++;
+            }else{
+                app.scores.team2++;
+            }
 
-            app.stage.add(app.layer);
-            app.firstTurn = false;
-        }else{
-            app.barrel.move();
-            app.dwarf.move();
-            app.msgs.update();
+            if(app.endedGame && app.turns.length > 1) {
+                app.showScores();
+
+                setTimeout(function(){
+                    $("#dwarf-score").hide();
+                    app.createInterval();
+                }, 2000);
+            }
+        } else {
+            if(app.firstTurn) {
+                app.barrel.init();
+                app.dwarf.init();
+                app.msgs.update();
+
+                app.stage.add(app.layer);
+                app.firstTurn = false;
+            }else{
+                app.barrel.move();
+                app.dwarf.move();
+                app.msgs.update();
+            }
         }
-    } else if(app.endGameData) {
-        app.endGame();
     }
 }
 

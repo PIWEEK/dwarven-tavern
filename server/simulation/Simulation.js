@@ -120,9 +120,7 @@ var Simulation = Backbone.Model.extend({
                 this.set("simulationFinished", true);
                 this.set("winner", this.get("player1"));
                 this.set("loser", this.get("player2"));
-            } else {
-                this.restart();
-            }
+            } 
         }
 
         // Player2 scores
@@ -136,8 +134,6 @@ var Simulation = Backbone.Model.extend({
                 this.set("simulationFinished", true);
                 this.set("loser", this.get("player1"));
                 this.set("winner", this.get("player2"));
-            } else {
-                this.restart();
             }
         }
     },

@@ -116,6 +116,8 @@ var SimulationManager = Backbone.Model.extend({
             
             if(simulation.get("simulationFinished")) {
                 this.get("emitter").emit("end-game", simulation);
+            } else if(newSc1 !== oldSc1 || newSc2 !== oldSc2) {
+                simulation.restart();
             }
         }
     },

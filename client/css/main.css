@@ -35,14 +35,13 @@ p, h2, li { color: #FFF; }
     position: relative;
     overflow: hidden;
 }
-
-#team1-dwarf {
+#team2-dwarf {
     background: url("../imgs/dwarf-blonde.png");
     top: 0;
     left: 10px;
 }
 
-#team2-dwarf {
+#team1-dwarf {
     background: url("../imgs/dwarf-redhead.png");
     bottom: 0;
     right: 310px;
