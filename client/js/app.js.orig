@@ -10,14 +10,24 @@ app.createGame = function() {
     app.layer = new Kinetic.Layer();
 
     app.loadImgs().done(function(){
-        app.socket.on('watch-response', function () {
-        	app.socket.on('turn', function (data) {
-            	app.turns.push(data);
-        	});
+        app.socket.on('watch-response', function (data) {
+
         });
+<<<<<<< Updated upstream
+        app.socket.emit("watch-request", {id: app.gameId});*/
+        
+=======
         app.socket.emit("watch-request", {id: app.gameId});
 
-        
+
+        var firstTurn = true;
+        var turn = 0;
+
+>>>>>>> Stashed changes
+        app.socket.on('turn', function (data) {
+            app.turns.push(data);
+        });
+
         app.play(0);
     });
 
@@ -32,15 +42,15 @@ app.processTurn = function() {
         app.turn = app.turns.shift();
 
         if(app.firstTurn) {
-                    app.barrel.init();
-                    app.dwarf.init();
+            app.barrel.init();
+            app.dwarf.init();
 
-                    app.stage.add(app.layer);
+            app.stage.add(app.layer);
             app.firstTurn = false;
-                }else{
-                    app.barrel.move();
-                    app.dwarf.move();
-                }
+        }else{
+            app.barrel.move();
+            app.dwarf.move();
+        }
     }
 }
 
