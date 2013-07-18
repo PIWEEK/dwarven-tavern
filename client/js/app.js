@@ -24,6 +24,10 @@ app.createGame = function() {
         	app.socket.on('end-game', function (data) {
                 app.endGameData = data;
         	});
+
+        	app.socket.on('player-score', function (data) {
+                app.endGameData = data;
+        	});
         });
 
         app.play(100);
@@ -41,7 +45,7 @@ app.requestCreateSimulation = function() {
 }
 
 app.endGame = function() {
-
+    $("#dwarf-score").fadeIn();
 };
 
 app.firstTurn = true;

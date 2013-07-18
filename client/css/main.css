@@ -48,12 +48,15 @@ p, h2, li { color: #FFF; }
     right: 310px;
 }
 
+#dwarf-score {
+    display: none;
+}
+
 .team-dwarf {
     position: absolute;
     z-index: 9999;
     width: 300px;
     height: 395px;
-    display: none;
 }
 
 .team-dwarf .points {
