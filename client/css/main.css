@@ -32,6 +32,28 @@ p, h2, li { color: #FFF; }
     display: none;
     margin: 0 auto;
     width: 972px;
+    position: relative;
+    overflow: hidden;
+}
+
+#team-1-area {
+    background-color: red;
+    opacity: 0.5; 
+    position: absolute;
+    bottom: 0;
+    width: 672px;
+    left: 0;
+    height: 32px;
+}
+
+#team-2-area {
+    background-color: yellow;
+    opacity: 0.5;
+    position: absolute;
+    top: 0;
+    width: 672px;
+    left: 0;
+    height: 32px;
 }
 
 #container {
@@ -40,6 +62,10 @@ p, h2, li { color: #FFF; }
     background: url("../imgs/ground.png");
     background-size: 55px;
     float: left;
+}
+
+#container canvas {
+    z-index: 9999;
 }
 
 #msgs {

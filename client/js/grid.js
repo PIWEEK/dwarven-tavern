@@ -2,6 +2,8 @@ app.grid = (function() {
     var box_width = 32;
     var box_height = 32;
 
+    $("#team-1-area, #team-2-area").css("height", box_height);
+
     var getXYGrid = function(x, y) {
         var position = {};
 
