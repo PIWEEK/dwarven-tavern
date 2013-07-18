@@ -20,12 +20,27 @@ var SimulationEventType  = {
     BOT_HIT: 4,
 };
 
+var cloneBotDataList = function(botDataList) {
+    var result = [];
+    
+    _.each(botDataList, function(botData){
+        result.push(new BotData({
+            id: botData.get("id"),
+            name: botData.get("name"),
+            coords: { x: botData.get("coords").x, y: botData.get("coords").y }
+        }));
+    });
+    return result;
+};
+
 var Simulation = Backbone.Model.extend({
     defaults: {
         grid: null,
-        barrels: {},
-        bots: {},
+        barrels: null,
+        bots: null,
         currentTurn: 0,
+        scorePlayer1: 0,
+        scorePlayer2: 0,
         teams: null,
         simulationFinished: false
     },
@@ -34,10 +49,13 @@ var Simulation = Backbone.Model.extend({
      * Initialize the game grid with the heiht/width passed as parameters 
      */
     initialize: function(){
+        this.clean();
+    },
+    
+    clean: function(){
         var width = this.get("width"),
-            height = this.get("height"),
-            grid = new Array();
-        
+        height = this.get("height"),
+        grid = new Array();
         for(var row=0; row<height; row++) {
             grid[row] = new Array();
             for(var col=0; col<width; col++) {
@@ -46,7 +64,20 @@ var Simulation = Backbone.Model.extend({
         }
         this.set("grid", grid);
         this.set("turnEvents", {});
+        this.set("barrels", {});
+        this.set("bots", {});
         this.set("teams", []);
+    },
+    
+    restart: function() {
+        console.log(">> RESTARTING");
+        this.clean();
+        console.log(">> RESTARTING. CLEAN");
+        var self = this;
+        _.each(this.get("initial"), function(initial){
+            self.setTeam(initial.teamId, initial.barrelPos, initial.botDataList);
+        });
+        console.log(">> RESTARTING COMPLETE");
     },
     
     getTurnEvents: function(){
@@ -89,18 +120,38 @@ var Simulation = Backbone.Model.extend({
         // Check the barrels and to end the game
         var barrels = this.get("barrels");
         var teams = this.get("teams");
+
         
-        if (barrels[teams[0]].get("coords").y == 0) {
-            console.log("+++++ FUUUU");
-            this.set("simulationFinished", true);
-            this.set("loser", this.get("player1"));
-            this.set("winner", this.get("player2"));
-        }
+        // Player1 scores
         if (barrels[teams[1]].get("coords").y == this.get("height")-1) {
-            console.log("+++++ FUUUU");
-            this.set("simulationFinished", true);
-            this.set("winner", this.get("player1"));
-            this.set("loser", this.get("player2"));
+            console.log("!! SCORE PLAYER 1 !!");
+            var p1Score = this.get("scorePlayer1");
+            p1Score = p1Score +1;
+            this.set("scorePlayer1", p1Score);
+            
+            if(p1Score >= this.get("pointsToWin")) {
+                this.set("simulationFinished", true);
+                this.set("winner", this.get("player1"));
+                this.set("loser", this.get("player2"));
+            } else {
+                this.restart();
+            }
+        }
+
+        // Player2 scores
+        if (barrels[teams[0]].get("coords").y == 0) {
+            console.log("!! SCORE PLAYER 2 !!");
+            var p2Score = this.get("scorePlayer2");
+            p2Score = p2Score +1;
+            this.set("scorePlayer2", p2Score);
+
+            if(p2Score >= this.get("pointsToWin")) {
+                this.set("simulationFinished", true);
+                this.set("loser", this.get("player1"));
+                this.set("winner", this.get("player2"));
+            } else {
+                this.restart();
+            }
         }
     },
     
@@ -160,6 +211,7 @@ var Simulation = Backbone.Model.extend({
      * @param botDataList List of the different bot data
      */
     setTeam: function(teamId, barrelPos, botDataList) {
+        console.log(">> SET TEAM %s, %j, %j", teamId, barrelPos, botDataList);
         var grid = this.get("grid"),
             bots = this.get("bots"),
             barrels = this.get("barrels");
@@ -180,6 +232,14 @@ var Simulation = Backbone.Model.extend({
             bots[botData.get("id")] = botData;
         });
         this.get("teams").push(teamId);
+        
+        var initial = this.get("initial");
+        if(!initial) {
+            this.set("initial", []);
+        }
+        if(this.get("initial").length != 2) {
+            this.get("initial").push({teamId: teamId, barrelPos: _.clone(barrelPos), botDataList: cloneBotDataList(botDataList)});
+        }
     },
     
     /**
@@ -274,9 +334,9 @@ var Simulation = Backbone.Model.extend({
             case BotAction.Directions.NORTH:
                 newCoords.y -= 1;
                 if(teamId == teams[1]) {
-                	if (newCoords.y < 1) newCoords.y = 1;
+                    if (newCoords.y < 1) newCoords.y = 1;
                 } else {
-                	if (newCoords.y < 0) newCoords.y = 0;
+                    if (newCoords.y < 0) newCoords.y = 0;
                 }
                 break;
                 
@@ -284,9 +344,9 @@ var Simulation = Backbone.Model.extend({
                 newCoords.y += 1;
                 
                 if(teamId == teams[0]) {
-                	if (newCoords.y > height-2) newCoords.y = height-2;
+                    if (newCoords.y > height-2) newCoords.y = height-2;
                 } else {
-                	if (newCoords.y > height-1) newCoords.y = height-1;
+                    if (newCoords.y > height-1) newCoords.y = height-1;
                 }
                 break;
                 
@@ -308,7 +368,7 @@ var Simulation = Backbone.Model.extend({
         
         if(grid[newCoords.y][newCoords.x].state == GridCellState.BARREL) {
             newCoords = oldCoords;
-        } else if(grid[newCoords.y][newCoords.x].state == GridCellState.BOT) {
+        } else if(grid[newCoords.y][newCoords.x].state == GridCellState.BOT && newCoords.y != 0 && newCoords.y != height-1) {
             this.hitBot(bots[grid[newCoords.y][newCoords.x].botId], direction);
             
             if(grid[newCoords.y][newCoords.x].state != GridCellState.EMPTY){
@@ -474,7 +534,7 @@ if (require.main === module) {
         })*/
     ]);
     console.log(simulation.toString());
-    console.log(">> " + simulation.get("simulationFinished"));
+//    console.log(">> " + simulation.get("simulationFinished"));
 
     simulation.processTurn([
         new BotAction({botId: 1, type: BotAction.Types.MOVE, direction: BotAction.Directions.EAST}),
@@ -493,7 +553,7 @@ if (require.main === module) {
 
 //    console.log("\n\n####################################################################################\n\n");
     console.log(simulation.toString());
-    console.log(">> " + simulation.get("simulationFinished"));
+//    console.log(">> " + simulation.get("simulationFinished"));
 //    console.log(JSON.stringify(simulation.getCurrentState(), undefined, 2));
     
 //    console.log(JSON.stringify(simulation.getTurnEvents(1), undefined, 2));

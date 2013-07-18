@@ -81,6 +81,10 @@ simulationManager.get("emitter").on("team2-turn", function(simulation){
     }
 });
 
+simulationManager.get("emitter").on("player-score", function(simulation, team){
+    webSocketServer.emitRoom("player-score", { type: "player-score", team: team }, simulation.get("id"));
+});
+
 simulationManager.get("emitter").on("end-game", function(simulation){
     console.log("++ GAME FINISHED");
 

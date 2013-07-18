@@ -23,6 +23,9 @@ var SimulationManager = Backbone.Model.extend({
         this.get("simulations")[uid] = new Simulation({
             width: this.get("width"),
             height: this.get("width"),
+            pointsToWin: 2,
+            scorePlayer1: 0,
+            scorePlayer2: 0,
             lastId: 0,
             playersConnected: 0,
             id: uid
@@ -90,12 +93,24 @@ var SimulationManager = Backbone.Model.extend({
         
         if(!simulation.get("simulationFinished")) {
             console.log("++ Turn for simulation: " + simulation.get("id"));
+            
+            var oldSc1 = simulation.get("scorePlayer1"),
+                oldSc2 = simulation.get("scorePlayer2");
+            
             simulation.processTurn(simulationTurn.get("actions"));
+            
+            var newSc1 = simulation.get("scorePlayer1"),
+                newSc2 = simulation.get("scorePlayer2");
+            
+            if(newSc1 > oldSc1) {
+                this.get("emitter").emit("player-score", simulation, simulation.get("teams")[0]);
+            } else if (newSc2 > oldSc2) {
+                this.get("emitter").emit("player-score", simulation, simulation.get("teams")[1]);
+            }
             
             if(simulation.get("simulationFinished")) {
                 this.get("emitter").emit("end-game", simulation);
-            }
-            else if(simulation.get("currentTurn") % 2 == 1) {
+            } else if(simulation.get("currentTurn") % 2 == 1) {
                 this.get("emitter").emit("team1-turn", simulation);
             } else {
                 this.get("emitter").emit("team2-turn", simulation);
