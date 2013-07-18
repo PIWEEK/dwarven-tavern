@@ -91,13 +91,11 @@ var Simulation = Backbone.Model.extend({
         var teams = this.get("teams");
         
         if (barrels[teams[0]].get("coords").y == 0) {
-            console.log("+++++ FUUUU");
             this.set("simulationFinished", true);
             this.set("loser", this.get("player1"));
             this.set("winner", this.get("player2"));
         }
         if (barrels[teams[1]].get("coords").y == this.get("height")-1) {
-            console.log("+++++ FUUUU");
             this.set("simulationFinished", true);
             this.set("winner", this.get("player1"));
             this.set("loser", this.get("player2"));
@@ -274,9 +272,9 @@ var Simulation = Backbone.Model.extend({
             case BotAction.Directions.NORTH:
                 newCoords.y -= 1;
                 if(teamId == teams[1]) {
-                	if (newCoords.y < 1) newCoords.y = 1;
+                    if (newCoords.y < 1) newCoords.y = 1;
                 } else {
-                	if (newCoords.y < 0) newCoords.y = 0;
+                    if (newCoords.y < 0) newCoords.y = 0;
                 }
                 break;
                 
@@ -284,9 +282,9 @@ var Simulation = Backbone.Model.extend({
                 newCoords.y += 1;
                 
                 if(teamId == teams[0]) {
-                	if (newCoords.y > height-2) newCoords.y = height-2;
+                    if (newCoords.y > height-2) newCoords.y = height-2;
                 } else {
-                	if (newCoords.y > height-1) newCoords.y = height-1;
+                    if (newCoords.y > height-1) newCoords.y = height-1;
                 }
                 break;
                 
@@ -337,7 +335,7 @@ var Simulation = Backbone.Model.extend({
             teamId = botData.get("team"),
             botId = botData.get("id");
         
-        this.addTurnEvent({type: SimulationEventType.BARREL_HIT, message: "Barrel of team" + (teamId+1) + " hit " + botData.get("name")});
+        this.addTurnEvent({type: SimulationEventType.BARREL_HIT, message: botData.get("name") +  " was hit!!"});
 
         var oldCoords = botData.get("coords"),
             newCoords = { x: oldCoords.x, y: oldCoords.y };

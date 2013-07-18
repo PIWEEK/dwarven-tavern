@@ -37,7 +37,7 @@ var SimulationTurn = Backbone.Model.extend({
             var passAction = (action.get("botId") && (action.get("type") == BotAction.Types.PASS));
 
             if (!moveAction && !passAction) {
-            	valid = false;
+                valid = false;
             }
                 
         });
