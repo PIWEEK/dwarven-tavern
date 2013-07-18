@@ -78,22 +78,35 @@ var SimulationManager = Backbone.Model.extend({
             console.log("++ Turn for simulation: " + simulation.get("id"));
             simulation.processTurn(simulationTurn.get("actions"));
             
-            if(simulation.get("currentTurn") % 2 == 1) {
+            if(simulation.get("simulationFinished")) {
+                this.get("emitter").emit("end-game", simulation);
+            }
+            else if(simulation.get("currentTurn") % 2 == 1) {
                 this.get("emitter").emit("team1-turn", simulation);
             } else {
                 this.get("emitter").emit("team2-turn", simulation);
-            }
-            
-            if(simulation.get("simulationFinished")) {
-                this.get("emitter").emit("end-game", simulation);
             }
         }
     },
     
     getSimulationForClient: function(client) {
         var socket = client.get("socket");
-        var clientName = socket.remoteAddress + ":" + socket.remotePort;
+        
+        var clientName;
+        if(socket.remoteAddress) {
+            clientName = socket.remoteAddress + ":" + socket.remotePort;
+            client.set("clientName", clientName);
+        } else {
+            clientName = client.get("clientName");
+        }
+        
+        console.log(">> Client name %s", clientName);
+        
         var uid = this.get("clients")[clientName];
+        
+        if(!uid) {
+            return null;
+        }
         return this.get("simulations")[uid];
     },
     
@@ -110,6 +123,12 @@ var SimulationManager = Backbone.Model.extend({
     hasSimulation: function(simulationId) {
         var simulations = this.get("simulations");
         return (true && simulations[simulationId]);
+    },
+    
+    removeSimulation: function(simulation) {
+        var simulationId = simulation.get("id"),
+            simulations = this.get("simulations");
+        delete simulations[simulationId];
     }
 });
 

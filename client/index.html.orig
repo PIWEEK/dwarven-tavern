@@ -8,13 +8,18 @@
   </head>
   <body>
     <img id="logo" width="512" src="imgs/tavern-logo.png" />
+<<<<<<< Updated upstream
     <div id="game">
-    	<div id="container"></div>
-      	<div id="msgs">
-        	<ul></ul>
-      	</div>
+      <div id="container"></div>
+      <div id="msgs">
+        <ul></ul>
+      </div>
     </div>
+    
+=======
+    <div id="container"></div>
 
+>>>>>>> Stashed changes
     <div id="ip">
       <h2>Server IP</h2>
       <p><input id="ip-address" type="text" /> <input id="submit-ip" type="submit" value="Send" /></p>
@@ -22,7 +27,6 @@
     <div id="games">
       <h2>Choose the game:</h2>
         <ul></ul>
-      <button>Create simulation</button>
     </div>
 
     <script type="text/javascript" src="js/libs/jquery-2.0.3.js"></script>
@@ -31,10 +35,11 @@
 
     <script type="text/javascript" src="js/init.js"></script>
 
-    <script type="text/javascript" src="js/imgs.js"></script> 
-    <script type="text/javascript" src="js/msgs.js"></script>
-    <script type="text/javascript" src="js/sounds.js"></script> 
-    <script type="text/javascript" src="js/grid.js"></script> 
+    <script type="text/javascript" src="js/mock.js"></script>
+
+    <script type="text/javascript" src="js/imgs.js"></script>
+    <script type="text/javascript" src="js/sounds.js"></script>
+    <script type="text/javascript" src="js/grid.js"></script>
     <script type="text/javascript" src="js/barrel.js"></script>
     <script type="text/javascript" src="js/dwarf.js"></script>
     <script type="text/javascript" src="js/initScreen.js"></script>

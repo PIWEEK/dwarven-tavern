@@ -5,11 +5,10 @@ var net = require("net"),
     _ = require("underscore");
 
 var simulationId = "6oojlb5";
-
 var server = null;
+var disconnected = false;
 
 var joinSimulation = function() {
-//    console.log ("CONNECTED >> Sending JOIN");
     var joinMessage = {
         "type" : "join-simulation",
         "nick" : "Dummy",
@@ -44,7 +43,7 @@ var isEqualPos = function(pos1, pos2) {
 };
 
 var createActionMoveTo = function(bot, toPosition, toEvit) {
-	
+    
     var direction = null;
     
     if(bot.coords.y < toPosition.y && !isEqualPos(toEvit, {x: bot.coords.x, y: bot.coords.y+1})) {
@@ -57,12 +56,10 @@ var createActionMoveTo = function(bot, toPosition, toEvit) {
         direction = "WEST";
     } 
     
-    console.log("%j -> %j, evit:%j = %s", bot.coords, toPosition, toEvit, direction);
-    
     if(direction) {
-    	return { "botId": bot.id, "type": "MOVE", "direction": direction };
+        return { "botId": bot.id, "type": "MOVE", "direction": direction };
     } else {
-    	return { "botId": bot.id, "type": "PASS" };
+        return { "botId": bot.id, "type": "PASS" };
     }
 };
 
@@ -77,9 +74,7 @@ var runTurn = function(state) {
     var actions = [];
 
     var executeBotAttacker = function(bot) {
-//        console.log(">> Attacker %j %d", bot, targetY);
         var wantedPos = getWantedBarrelPos(opponentBarrel, targetY);
-//        console.log("WANTED: %j", wantedPos);
         
         if(isEqualPos(bot.coords, wantedPos)) {
             actions.push(createActionMoveTo(bot, {x: bot.coords.x, y: targetY},{x:-1,y:-1}));
@@ -89,9 +84,7 @@ var runTurn = function(state) {
     };
 
     var executeBotDefender = function(bot) {
-//        console.log(">> Defender %j %d", bot, deffendingY);
         var wantedPos = getWantedBarrelPos(myTeamBarrel, deffendingY);
-//        console.log("WANTED: %j", wantedPos);
 
         if(isEqualPos(bot.coords, wantedPos)) {
             actions.push(createActionMoveTo(bot, {x: bot.coords.x, y: deffendingY},{x:-1,y:-1}));
@@ -106,7 +99,6 @@ var runTurn = function(state) {
     
     myTeamBarrel = state["barrels"][myTeam]["coords"];
     opponentBarrel = state["barrels"][opponentTeam]["coords"];
-    // console.log("BARRILES: %j, %j", myTeamBarrel, opponentBarrel);
     
     attackers = [ state[myTeam][0], state[myTeam][2], state[myTeam][4]];
     _.each(attackers, executeBotAttacker);
@@ -123,19 +115,17 @@ var runTurn = function(state) {
         "actions": actions
     };
     
-    server.write(JSON.stringify(turnMessage));
+    if(!disconnected) {
+        server.write(JSON.stringify(turnMessage));
+    }
 };
 
-var turn =0;
 server.on("data", function(data) {
-    // console.log(">> " + data);
+     console.log(">> " + data);
     var message = JSON.parse(data);
     
     if(message["type"] == "turn") {
-    	turn++;
-//        setTimeout(function(){runTurn(message["state"]);}, 500);
-//    	if(turn <= 10)
-    		runTurn(message["state"]);
+        runTurn(message["state"]);
     } else if(message["type"] == "game-info") {
         myTeam = message["team"];
         if(message["team"] == "team1") {
@@ -151,6 +141,8 @@ server.on("data", function(data) {
     } else if(message["type"] == "ready") {
         simulationId = message["simulationId"];
         joinSimulation();
+    } else if(message["type"] == "error" && message["message"] == "Player disconnected") {
+        console.log("DISCONNECTED");
     } else if(message["type"] == "error" && message["message"] == "Wrong simulation ID") {
         server.write(JSON.stringify({"type" : "create-simulation"}));
     } else {
@@ -160,6 +152,7 @@ server.on("data", function(data) {
 });
 
 server.on("end", function() {
+    disconnected = true;
     console.log("END");
 });
 

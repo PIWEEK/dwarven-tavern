@@ -55,7 +55,10 @@ var InputServer = Backbone.Model.extend({
                 socket.write(response);
             });
 
-            socket.on('end', _.bind(client.endConnection, client));
+            socket.on('end', function(){
+                client.endConnection();
+                self.get("emitter").emit("player-disconnected", client);
+            });
         }));
     },
 
