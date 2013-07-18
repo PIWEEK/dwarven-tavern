@@ -1,5 +1,6 @@
 app.imgs = [
-    {"key": "barrel", "url": 'imgs/barrel.png'},
+    {"key": "barrelteam1", "url": 'imgs/barrel-team1.png'},
+    {"key": "barrelteam2", "url": 'imgs/barrel-team2.png'},
     {"key": "team1", "url": 'imgs/team1.png'},
     {"key": "team2", "url": 'imgs/team2.png'},
 ];

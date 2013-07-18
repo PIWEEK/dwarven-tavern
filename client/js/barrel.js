@@ -7,13 +7,13 @@ app.barrel = (function () {
     var barrelTeam1 = {};
     var barrelTeam2 = {};
 
-    var createBarrelSprite = function(x, y){
+    var createBarrelSprite = function(x, y, barrel){
         var position = app.grid.getXYGrid(x, y);
 
         return new Kinetic.Sprite({
             x: position.x,
             y: position.y,
-            image: app.img.barrel,
+            image: barrel,
             width: 32,
             height: 32,
             animation: "vertical",
@@ -23,8 +23,8 @@ app.barrel = (function () {
 
     var initBarrelTeam1 = function(){
         var barrel = app.turn.state.barrels.team1.coords;
-
-        barrelTeam1.sprite = createBarrelSprite(barrel.x, barrel.y);
+        console.log(app.imgs)
+        barrelTeam1.sprite = createBarrelSprite(barrel.x, barrel.y, app.img.barrelteam1);
         
         app.layer.add(barrelTeam1.sprite);
         barrelTeam1.sprite.start();
@@ -33,7 +33,7 @@ app.barrel = (function () {
     var initBarrelTeam2 = function(){
         var barrel = app.turn.state.barrels.team2.coords;
 
-        barrelTeam2.sprite = createBarrelSprite(barrel.x, barrel.y);
+        barrelTeam2.sprite = createBarrelSprite(barrel.x, barrel.y, app.img.barrelteam2);
         
         app.layer.add(barrelTeam2.sprite);
         barrelTeam2.sprite.start();
