@@ -101,12 +101,13 @@ simulationManager.get("emitter").on("end-game", function(simulation){
         winner: simulation.get("winner").get("nick"),
         loser: simulation.get("loser").get("nick")
     });
+    webSocketServer.emitBroadcast("simulation-list", { serverList: simulationManager.getSimulationList()});
 });
 
 webSocketServer.get("emitter").on("create-simulation", function(socket){
     console.log("++ Simulation create");
     simulationManager.createSimulation();
-    socket.emit("simulation-list", { serverList: simulationManager.getSimulationList()});
+    webSocketServer.emitBroadcast("simulation-list", { serverList: simulationManager.getSimulationList()});
     console.log("++ Simulation create OK");
 });
 
@@ -116,6 +117,7 @@ inputServer.get("emitter").on("create-simulation", function(jsonContent, client)
     var response = '{"type": "ready", "simulationId": "' + simulationID + '" }\n';
     client.get("socket").write(response);
     console.log("++ Simulation create OK");
+    webSocketServer.emitBroadcast("simulation-list", { serverList: simulationManager.getSimulationList()});
 });
 
 inputServer.get("emitter").on("join-simulation", function(jsonContent, client){
@@ -123,23 +125,40 @@ inputServer.get("emitter").on("join-simulation", function(jsonContent, client){
     var playerData = new PlayerData({jsonContent: jsonContent});
     playerData.set("client", client);
     
-    if(simulationManager.hasSimulation(jsonContent.simulationId)) {
-        var simulation = simulationManager.joinSimulation(jsonContent.simulationId, playerData);
-        console.log("++ Player joined OK");
-        var playersConnected = simulation.get("playersConnected");
-        var teams = simulation.get("teams");
-        
-        // Send back the game info
-        var response = {
-            type: "game-info",
-            team: teams[playersConnected-1],
-            width: config.width,
-            height: config.height
-        };
-        client.get("socket").write(JSON.stringify(response));
+    var simulation;
+    if(!jsonContent.simulationId) {
+        console.log("++ Finding random game");
+        simulation = simulationManager.joinRandomSimulation(playerData);
+        // We couldn't connect to a random game, so we create one
+        if(!simulation) {
+            var newUID = simulationManager.createSimulation();
+            console.log("++ No random game found, create game %s", newUID);
+            simulation = simulationManager.joinSimulation(newUID, playerData);
+        } else {
+            console.log("++ Random game found %s", simulation.get("id"));
+        }
+    }
+    else if(simulationManager.hasSimulation(jsonContent.simulationId)) {
+        simulation = simulationManager.joinSimulation(jsonContent.simulationId, playerData);
     } else {
         client.get("socket").write(JSON.stringify({"type": "error", "message": "Wrong simulation ID"}));
+        return;
     }
+    console.log("++ Player joined OK");
+    var playersConnected = simulation.get("playersConnected");
+    var teams = simulation.get("teams");
+    
+    // Send back the game info
+    var response = {
+        type: "game-info",
+        simulationId: simulation.get("id"),
+        team: teams[playersConnected-1],
+        width: config.width,
+        height: config.height
+    };
+    client.get("socket").write(JSON.stringify(response));
+    
+    webSocketServer.emitBroadcast("simulation-list", { serverList: simulationManager.getSimulationList()});
 });
 
 inputServer.get("emitter").on("player-turn", function(jsonContent, client) {

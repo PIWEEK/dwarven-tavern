@@ -4,7 +4,7 @@
 var net = require("net"),
     _ = require("underscore");
 
-var simulationId = "6oojlb5";
+var simulationId = null;
 var server = null;
 var disconnected = false;
 
@@ -12,7 +12,7 @@ var joinSimulation = function() {
     var joinMessage = {
         "type" : "join-simulation",
         "nick" : "Dummy",
-        "simulationId" : simulationId,
+        // "simulationId" : simulationId,
         "names" : [
             "Carawebo",
             "Pantuflo",
