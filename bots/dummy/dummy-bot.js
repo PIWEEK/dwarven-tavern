@@ -4,7 +4,7 @@
 var net = require("net"),
     _ = require("underscore");
 
-var simulationId = null;
+var simulationId = process.argv[2] ? process.argv[2] : null;
 var server = null;
 var disconnected = false;
 
@@ -12,7 +12,7 @@ var joinSimulation = function() {
     var joinMessage = {
         "type" : "join-simulation",
         "nick" : "Dummy",
-        // "simulationId" : simulationId,
+        "simulationId" : simulationId,
         "names" : [
             "Carawebo",
             "Pantuflo",
@@ -43,19 +43,19 @@ var isEqualPos = function(pos1, pos2) {
 };
 
 var createActionMoveTo = function(bot, toPosition, toEvit) {
-    
+
     var direction = null;
-    
+
     if(bot.coords.y < toPosition.y && !isEqualPos(toEvit, {x: bot.coords.x, y: bot.coords.y+1})) {
         direction = "SOUTH";
-    } else if(bot.coords.y > toPosition.y && !isEqualPos(toEvit, {x: bot.coords.x, y: bot.coords.y-1})) { 
+    } else if(bot.coords.y > toPosition.y && !isEqualPos(toEvit, {x: bot.coords.x, y: bot.coords.y-1})) {
         direction = "NORTH";
     } else if(bot.coords.x < toPosition.x && !isEqualPos(toEvit, {x: bot.coords.x+1, y: bot.coords.y})) {
         direction = "EAST";
     } else if(bot.coords.x > toPosition.x && !isEqualPos(toEvit, {x: bot.coords.x-1, y: bot.coords.y})) {
         direction = "WEST";
-    } 
-    
+    }
+
     if(direction) {
         return { "botId": bot.id, "type": "MOVE", "direction": direction };
     } else {
@@ -75,7 +75,7 @@ var runTurn = function(state) {
 
     var executeBotAttacker = function(bot) {
         var wantedPos = getWantedBarrelPos(opponentBarrel, targetY);
-        
+
         if(isEqualPos(bot.coords, wantedPos)) {
             actions.push(createActionMoveTo(bot, {x: bot.coords.x, y: targetY},{x:-1,y:-1}));
         } else {
@@ -96,25 +96,25 @@ var runTurn = function(state) {
     var executeBotVariable = function(bot) {
         // console.log(">> Variable %j", bot);
     };
-    
+
     myTeamBarrel = state["barrels"][myTeam]["coords"];
     opponentBarrel = state["barrels"][opponentTeam]["coords"];
-    
+
     attackers = [ state[myTeam][0], state[myTeam][2], state[myTeam][4]];
     _.each(attackers, executeBotAttacker);
-    
+
     defenders = [ state[myTeam][1], state[myTeam][3]];
     _.each(defenders, executeBotDefender);
-    
+
     variable = [  ];
     _.each(variable, executeBotVariable);
-    
-    
+
+
     var turnMessage = {
         "type" : "player-turn",
         "actions": actions
     };
-    
+
     if(!disconnected) {
         server.write(JSON.stringify(turnMessage));
     }
@@ -123,7 +123,7 @@ var runTurn = function(state) {
 server.on("data", function(data) {
      console.log(">> " + data);
     var message = JSON.parse(data);
-    
+
     if(message["type"] == "turn") {
         runTurn(message["state"]);
     } else if(message["type"] == "game-info") {
