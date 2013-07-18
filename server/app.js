@@ -103,8 +103,6 @@ simulationManager.get("emitter").on("player-score", function(simulation, team){
 simulationManager.get("emitter").on("end-game", function(simulation){
     console.log("++ GAME FINISHED");
 
-    webSocketServer.emitRoom("turn", { type: "turn", messages: simulation.getTurnEvents(), state: simulation.getCurrentState()}, simulation.get("id"));
-
     simulationManager.removeSimulation(simulation);
 
     var responseWin = JSON.stringify({ type: "win-game", state: simulation.getCurrentState()});
