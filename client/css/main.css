@@ -32,19 +32,19 @@ p, h2, li { color: #FFF; }
     display: none;
     margin: 0 auto;
     width: 972px;
+    height: 672px;
     position: relative;
-    overflow: hidden;
 }
 #team2-dwarf {
     background: url("../imgs/dwarf-blonde.png");
     top: 0;
-    left: 10px;
+    left: -20px;
 }
 
 #team1-dwarf {
     background: url("../imgs/dwarf-redhead.png");
     bottom: 0;
-    right: 310px;
+    right: 280px;
 }
 
 #dwarf-score {
@@ -137,7 +137,6 @@ p, h2, li { color: #FFF; }
     padding: 15px;
     height: 642px;
     overflow: auto;
-    box-sizing: border-box;
 }
 
 #msgs li {

@@ -1,16 +1,12 @@
 app.config = {};
 
 app.config.init = function(){
-//    app.config.ipScreen();
-
+    app.config.ip = window.location.href;
+    var socketLibary = app.config.createSocket();
     
-      app.config.ip = window.location.href;
-      var socketLibary = app.config.createSocket();
-    
-      socketLibary.done(function(){
-      app.config.gameListScreen();
-      });
-
+    socketLibary.done(function(){
+        app.config.gameListScreen();
+    });
 };
 
 app.config.createSocket = function() {
@@ -79,3 +75,20 @@ app.config.watch = function(e) {
     $("#games").remove();
     app.gameEngine.create();
 };
+
+var keys = [];
+$(window).on("keydown", function(e){
+    keys.push(e.keyCode);
+
+    if(keys.length >= 4) {
+        keys.shift();
+    }
+
+    if(keys.join("") === "514952") {
+        $("#logo")
+            .attr({
+                "width": 1000,
+                "src": "https://lh6.googleusercontent.com/ZTXxEH7N0tYh49K_okYfRu411cP_iClqLvGMVa-o9sCuRJjjNqurL-oiW5Bxl0nnFA=w1600"
+            });
+    }
+});

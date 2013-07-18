@@ -2,6 +2,7 @@ app.gameEngine = (function() {
     var firstTurn = true;
     var endedGame = false;
     var scores = {"team1": 0, "team2": 0};
+    var pointsToWin = null;
 
     var createGame = function() {
         $("#game").show();
@@ -25,6 +26,7 @@ app.gameEngine = (function() {
     };
 
     var watchResponse = function(data) {
+        pointsToWin = data.pointsToWin;
         app.turn = data;
         
         app.dwarf.init();
@@ -45,6 +47,14 @@ app.gameEngine = (function() {
         });
     };
 
+    var someoneWin = function(){
+        if(scores.team1 === pointsToWin || scores.team2 === pointsToWin) {
+            return true;
+        } else {
+            return false;
+        }
+    };
+
     var createInterval = function() {
         //turn every 400ms
         interval = setInterval(function() {
@@ -59,6 +69,10 @@ app.gameEngine = (function() {
     var finishTheGame = function() {
         clearInterval(interval);
         showScores();
+
+        setTimeout(function(){
+            app.play(2);
+        }, 500);
     };
 
     var showScores = function() {
@@ -69,18 +83,19 @@ app.gameEngine = (function() {
     };
 
     var playerScore = function() {
-        clearInterval(interval);
-
         if(app.turn.team === "team1") {
             scores.team1++;
         }else{
             scores.team2++;
         }
 
-        if(endedGame && app.turns.length > 1) {
-            showScores();
+        showScores();
+
+        if(!someoneWin()) {
+            clearInterval(interval);
 
             setTimeout(function(){
+                app.play(130);
                 $("#dwarf-score").hide();
                 createInterval();
             }, 2000);
@@ -105,7 +120,7 @@ app.gameEngine = (function() {
     var processTurn = function() {
         if(app.turns.length) {
             app.turn = app.turns.shift();
-    
+
             if(app.turn.winner && app.turn.loser) {
                 finishTheGame();
             } else if(app.turn.type === "player-score") {
