@@ -4,46 +4,41 @@
 var net = require("net"),
     _ = require("underscore");
 
+/*
+ * Global Methods
+ */
 var simulationId = process.argv[2] ? process.argv[2] : null;
 var server = null;
 var disconnected = false;
-
-var joinSimulation = function() {
-    var joinMessage = {
-        "type" : "join-simulation",
-        "nick" : "Dummy",
-        "simulationId" : simulationId,
-        "names" : [
-            "Carawebo",
-            "Pantuflo",
-            "Chistaburras",
-            "Pontato",
-            "Jhonny Tablas"
-        ]
-    };
-    server.write(JSON.stringify(joinMessage));
-};
-
- server = net.connect({port: 9000}, joinSimulation);
-
 var targetY = 0;
 var deffendingY = 0;
 var myTeam = "";
 var opponentTeam = "";
 
 
+/**************************
+ *    AUXILIARY METHODS
+ ***************************/
+/*
+ * Returns a position for the dwarf to push the barrel in a good direction
+ */
 var getWantedBarrelPos = function(barrelPos, wantedY) {
     var x = barrelPos.x;
     var y = (barrelPos.y > wantedY)?barrelPos.y+1:barrelPos.y-1;
     return {x:x, y:y};
 };
 
+/*
+ * Check if to positions are equal
+ */
 var isEqualPos = function(pos1, pos2) {
     return pos1.x == pos2.x && pos1.y == pos2.y;
 };
 
+/*
+ * Creates an action to move towards a position in the grid
+ */
 var createActionMoveTo = function(bot, toPosition, toEvit) {
-
     var direction = null;
 
     if(bot.coords.y < toPosition.y && !isEqualPos(toEvit, {x: bot.coords.x, y: bot.coords.y+1})) {
@@ -63,26 +58,32 @@ var createActionMoveTo = function(bot, toPosition, toEvit) {
     }
 };
 
+/*
+ * MAIN LOGIC OF THE BOT
+ */
 var runTurn = function(state) {
-    var myTeamBarrel = null;
-    var opponentBarrel = null;
+    // Variables to hold the current state of the simulation
+    var myTeamBarrel = state["barrels"][myTeam]["coords"];
+    var opponentBarrel = state["barrels"][opponentTeam]["coords"];
 
+    // Bot configuration
     var attackers = [];
     var defenders = [];
-    var variable = [];
-
+    
+    // Actions to be sent to the server
     var actions = [];
-
+    
+    // Main logic for attacker bots
     var executeBotAttacker = function(bot) {
         var wantedPos = getWantedBarrelPos(opponentBarrel, targetY);
-
         if(isEqualPos(bot.coords, wantedPos)) {
             actions.push(createActionMoveTo(bot, {x: bot.coords.x, y: targetY},{x:-1,y:-1}));
         } else {
             actions.push(createActionMoveTo(bot, wantedPos,opponentBarrel));
         }
     };
-
+    
+    // Main logic for defender bots
     var executeBotDefender = function(bot) {
         var wantedPos = getWantedBarrelPos(myTeamBarrel, deffendingY);
 
@@ -92,23 +93,16 @@ var runTurn = function(state) {
             actions.push(createActionMoveTo(bot, wantedPos,myTeamBarrel));
         }
     };
-
-    var executeBotVariable = function(bot) {
-        // console.log(">> Variable %j", bot);
-    };
-
-    myTeamBarrel = state["barrels"][myTeam]["coords"];
-    opponentBarrel = state["barrels"][opponentTeam]["coords"];
-
+    
+    // We define 3 bots to "attack"..
     attackers = [ state[myTeam][0], state[myTeam][2], state[myTeam][4]];
-    _.each(attackers, executeBotAttacker);
-
+    
+    // ... 2 defenders
     defenders = [ state[myTeam][1], state[myTeam][3]];
+    
+    // We create the actions related to the bots
+    _.each(attackers, executeBotAttacker);
     _.each(defenders, executeBotDefender);
-
-    variable = [  ];
-    _.each(variable, executeBotVariable);
-
 
     var turnMessage = {
         "type" : "player-turn",
@@ -120,6 +114,28 @@ var runTurn = function(state) {
     }
 };
 
+/*
+ * CONNECTION METHODS
+ */
+var joinSimulation = function() {
+    var joinMessage = {
+        "type" : "join-simulation",
+        "nick" : "Dummy",
+        "simulationId" : simulationId,
+        "names" : [
+            "Carawebo",
+            "Pantuflo",
+            "Chistaburras",
+            "Pontato",
+            "Jhonny Tablas"
+        ]
+    };
+    server.write(JSON.stringify(joinMessage));
+};
+
+/*
+ * MAIN LOOP 
+ */
 server.on("data", function(data) {
      console.log(">> " + data);
     var message = JSON.parse(data);
@@ -158,3 +174,4 @@ server.on("end", function() {
     console.log("END");
 });
 
+server = net.connect({port: 9000}, joinSimulation);
