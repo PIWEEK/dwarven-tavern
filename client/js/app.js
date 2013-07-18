@@ -20,6 +20,10 @@ app.createGame = function() {
         	app.socket.on('turn', function (data) {
             	app.turns.push(data);
         	});
+
+        	app.socket.on('end-game', function (data) {
+                app.endGameData = data;
+        	});
         });
 
         app.play(100);
@@ -35,6 +39,10 @@ app.createGame = function() {
 app.requestCreateSimulation = function() {
     app.socket.emit('request-create-simulation');
 }
+
+app.endGame = function() {
+
+};
 
 app.firstTurn = true;
 
@@ -54,6 +62,8 @@ app.processTurn = function() {
             app.dwarf.move();
             app.msgs.update();
         }
+    } else if(app.endGameData) {
+        app.endGame();
     }
 }
 

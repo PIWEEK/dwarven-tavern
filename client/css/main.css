@@ -36,6 +36,63 @@ p, h2, li { color: #FFF; }
     overflow: hidden;
 }
 
+#team1-dwarf {
+    background: url("../imgs/dwarf-blonde.png");
+    top: 0;
+    left: 10px;
+}
+
+#team2-dwarf {
+    background: url("../imgs/dwarf-redhead.png");
+    bottom: 0;
+    right: 310px;
+}
+
+.team-dwarf {
+    position: absolute;
+    z-index: 9999;
+    width: 300px;
+    height: 395px;
+    display: none;
+}
+
+.team-dwarf .points {
+    margin-top: 270px;
+    display: block;
+    background-color: #fff;
+    text-align: center;
+    width: 100%;
+    height: 50px;
+    line-height: 50px;
+    color: #000;
+    font-family: 'Conv_DWARVESC';
+    font-size: 34px;
+    font-weight: bold;
+    border: 1px solid #000;
+    box-sizing: border-box;
+}
+
+.team-dwarf .inner {
+    position: relative;
+    float: left;
+    width: 100%;
+}
+
+.team-dwarf .hand {
+    position: absolute;
+    width: 40px;
+    height: 23px;
+    border-radius: 10px;
+    border: 3px solid #000;
+    background-color: #ffdac3;
+    display: block;
+    top: 261px;
+}
+
+.team-dwarf .right-hand {
+   right: 0; 
+}
+
 #team-1-area {
     background-color: red;
     opacity: 0.5; 
@@ -65,7 +122,7 @@ p, h2, li { color: #FFF; }
 }
 
 #container canvas {
-    z-index: 9999;
+    z-index: 8888;
 }
 
 #msgs {
