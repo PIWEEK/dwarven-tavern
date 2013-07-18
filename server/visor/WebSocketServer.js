@@ -96,6 +96,12 @@ var WebSocketServer = Backbone.Model.extend({
         _.each(this.get("socketList"), function(socket) {
             socket.emit(eventName, data);
         });
+    },
+
+    emitRoom: function(eventName, data, room) {
+        _.each(this.get("rooms")[room], function(socket) {
+            socket.emit(eventName, data);
+        });
     }
 
 });
