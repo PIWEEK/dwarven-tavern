@@ -22,7 +22,7 @@ var SimulationManager = Backbone.Model.extend({
         
         this.get("simulations")[uid] = new Simulation({
             width: this.get("width"),
-            height: this.get("width"),
+            height: this.get("height"),
             pointsToWin: this.get("pointsToWin"),
             scorePlayer1: 0,
             scorePlayer2: 0,
