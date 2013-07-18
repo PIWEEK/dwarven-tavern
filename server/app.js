@@ -1,4 +1,4 @@
-//"use strict";
+"use strict";
 
 var _ = require("underscore"),
     express = require("express"),
@@ -60,21 +60,38 @@ simulationManager.get("emitter").on("team2-turn", function(simulation){
     webSocketServer.emitBroadcast("turn", { type: "turn", messages: simulation.getTurnEvents(), state: simulation.getCurrentState()});
 
     var response = JSON.stringify({ type: "turn", state: simulation.getCurrentState()});
-    simulation.get("player1").get("client").get("socket").write(response);
+    try {
+        simulation.get("player1").get("client").get("socket").write(response);
+    } catch (exception){
+        console.log(" - " + exception);
+    }
 });
 
 simulationManager.get("emitter").on("end-game", function(simulation){
     console.log("++ GAME FINISHED");
     
+    simulationManager.removeSimulation(simulation);
+    
     var responseWin = JSON.stringify({ type: "win-game", state: simulation.getCurrentState()});
     var responseLoss = JSON.stringify({ type: "loss-game", state: simulation.getCurrentState()});
+    
     simulation.get("winner").get("client").get("socket").write(responseWin);
     simulation.get("loser").get("client").get("socket").write(responseLoss);
+    
+    simulation.get("winner").get("client").get("socket").end();
+    simulation.get("loser").get("client").get("socket").end();
 
     webSocketServer.emitBroadcast("end-game", {
         winner: simulation.get("winner").get("nick"),
         loser: simulation.get("loser").get("nick")
     });
+});
+
+webSocketServer.get("emitter").on("create-simulation", function(socket){
+    console.log("++ Simulation create");
+    simulationManager.createSimulation();
+    socket.emit("simulation-list", { serverList: simulationManager.getSimulationList()});
+    console.log("++ Simulation create OK");
 });
 
 inputServer.get("emitter").on("create-simulation", function(jsonContent, client){
@@ -125,8 +142,37 @@ inputServer.get("emitter").on('turn-malformed', function(client) {
     client.get("socket").write(response);
 });
 
+inputServer.get("emitter").on('player-disconnected', function(client) {
+    console.log("++ Notifying other players of disconnect");
+    try {
+        var response = JSON.stringify({"type": "error", "message": "Player disconnected"});
+        
+        var simulation = simulationManager.getSimulationForClient(client);
+        
+        if(simulation) {
+            simulationManager.removeSimulation(simulation);
+            console.log("++ Disconnecting: %s (%s,%s)", client.get("clientName"), simulation.get("player1").get("client").get("clientName"), simulation.get("player2").get("client").get("clientName"));
+            var clientPlayer1 = simulation.get("player1").get("client");
+            if(client.get("clientName") != clientPlayer1.get("clientName")) {
+                clientPlayer1.get("socket").write(response);
+                clientPlayer1.get("socket").end();
+            }
+            var clientPlayer2 = simulation.get("player2").get("client");
+            if(client.get("clientName") != clientPlayer2.get("clientName")) {
+                console.log("DISCONNECT %s", clientPlayer2.get("clientName"));
+                clientPlayer2.get("socket").write(response);
+                clientPlayer2.get("socket").end();
+            }
+        } else {
+            console.log("++ Not found other players");
+        }
+    } catch(err) {
+        console.log(" -- Error disconnecting clients: " + err);
+    }
+});
+
 webSocketServer.get("emitter").on("simulation-list", function(socket){
-    console.log("-------------------------------------")
+    console.log("-------------------------------------");
     socket.emit("simulation-list", { serverList: simulationManager.getSimulationList()});
 });
 
