@@ -45,6 +45,7 @@ webSocketServer.get("emitter").on("simulation-initial-status", function(simulati
     if (simulationManager.hasSimulation(simulationId)) {
         var simulation = simulationManager.get("simulations")[simulationId];
         response.type = "ok";
+        response.pointsToWin = config.pointsToWin;
         response.state = simulation.getCurrentState();
     } else {
         response.type = "error";

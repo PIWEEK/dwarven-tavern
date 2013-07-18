@@ -38,8 +38,6 @@ var WebSocketServer = Backbone.Model.extend({
             });
 
             socket.on('watch-request', function(data) {
-                console.log('>>> Me llega un watch request');
-                console.log(' >> rooms: ' + _.keys(self.get("rooms")));
                 var rooms = self.get("rooms");
 
                 if (!_.has(rooms, data.id)) {
@@ -49,9 +47,6 @@ var WebSocketServer = Backbone.Model.extend({
 
                 rooms[data.id].push(socket);
                 self.set("rooms", rooms);
-                console.log('>>> Tras añadirlo, tenemos');
-                console.log(' >> rooms: ' + _.keys(self.get("rooms")));
-
                 self.get("emitter").emit('simulation-initial-status', data.id, socket);
             });
 
@@ -71,24 +66,18 @@ var WebSocketServer = Backbone.Model.extend({
     removeSocket: function(socket) {
         this.set("socketList", _.without(this.get("socketList"), socket));
 
-        console.log('>>> Se va un socket');
-        console.log(' >> rooms: ' + _.keys(this.get("rooms")));
-        console.log(' >> ' + this.get("rooms")[0]);
-
+        var roomToChange = null;
+        
         var rooms = this.get("rooms");
         _.each(_.keys(rooms), function(room) {
             if(_.indexOf(rooms.room, socket) !== -1) {
-                var roomToChange = room;
+                roomToChange = room;
             }
         });
 
-        if (typeof roomToChange !== undefined) {
-            rooms.roomToChange = _.without(rooms.roomToChange, socket);
-
+        if (roomToChange) {
+            rooms[roomToChange] = _.without(rooms[roomToChange], socket);
             this.set("rooms", rooms);
-            console.log('>>> Tras eliminarlo, tenemos');
-            console.log(' >> rooms: ' + _.keys(this.get("rooms")));
-            console.log(' >> ' + this.get("rooms")[0]);
         }
     },
 
