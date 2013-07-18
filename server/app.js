@@ -24,7 +24,7 @@ simulationManager.get("emitter").on("simulation-ready", function(simulation){
     console.log(simulation.toString());
     console.log("\n##################################################\n");
 
-    webSocketServer.emitBroadcast("simulation-ready", {
+    webSocketServer.emitRoom("simulation-ready", {
         player1: {
             nick: simulation.get("player1").get("nick"),
             bots: simulation.get("player1").get("names")
@@ -59,7 +59,7 @@ simulationManager.get("emitter").on("team1-turn", function(simulation){
     console.log(simulation.toString());
     console.log("\n##################################################\n");
 
-    webSocketServer.emitBroadcast("turn", { type: "turn", messages: simulation.getTurnEvents(), state: simulation.getCurrentState()});
+    webSocketServer.emitRoom("turn", { type: "turn", messages: simulation.getTurnEvents(), state: simulation.getCurrentState()}, simulation.get("id"));
 
     var response = JSON.stringify({ type: "turn", state: simulation.getCurrentState()});
     simulation.get("player2").get("client").get("socket").write(response);
@@ -71,7 +71,7 @@ simulationManager.get("emitter").on("team2-turn", function(simulation){
     console.log(simulation.toString());
     console.log("\n##################################################\n");
 
-    webSocketServer.emitBroadcast("turn", { type: "turn", messages: simulation.getTurnEvents(), state: simulation.getCurrentState()});
+    webSocketServer.emitRoom("turn", { type: "turn", messages: simulation.getTurnEvents(), state: simulation.getCurrentState()}, simulation.get("id"));
 
     var response = JSON.stringify({ type: "turn", state: simulation.getCurrentState()});
     try {
@@ -83,21 +83,21 @@ simulationManager.get("emitter").on("team2-turn", function(simulation){
 
 simulationManager.get("emitter").on("end-game", function(simulation){
     console.log("++ GAME FINISHED");
-    
-    webSocketServer.emitBroadcast("turn", { type: "turn", messages: simulation.getTurnEvents(), state: simulation.getCurrentState()});
-    
+
+    webSocketServer.emitRoom("turn", { type: "turn", messages: simulation.getTurnEvents(), state: simulation.getCurrentState()});
+
     simulationManager.removeSimulation(simulation);
-    
+
     var responseWin = JSON.stringify({ type: "win-game", state: simulation.getCurrentState()});
     var responseLoss = JSON.stringify({ type: "loss-game", state: simulation.getCurrentState()});
-    
+
     simulation.get("winner").get("client").get("socket").write(responseWin);
     simulation.get("loser").get("client").get("socket").write(responseLoss);
-    
+
     simulation.get("winner").get("client").get("socket").end();
     simulation.get("loser").get("client").get("socket").end();
 
-    webSocketServer.emitBroadcast("end-game", {
+    webSocketServer.emitRoom("end-game", {
         winner: simulation.get("winner").get("nick"),
         loser: simulation.get("loser").get("nick")
     });
@@ -124,7 +124,7 @@ inputServer.get("emitter").on("join-simulation", function(jsonContent, client){
     console.log("++ Player joining: " + jsonContent.simulationId);
     var playerData = new PlayerData({jsonContent: jsonContent});
     playerData.set("client", client);
-    
+
     var simulation;
     if(!jsonContent.simulationId) {
         console.log("++ Finding random game");
@@ -147,7 +147,7 @@ inputServer.get("emitter").on("join-simulation", function(jsonContent, client){
     console.log("++ Player joined OK");
     var playersConnected = simulation.get("playersConnected");
     var teams = simulation.get("teams");
-    
+
     // Send back the game info
     var response = {
         type: "game-info",
@@ -157,7 +157,7 @@ inputServer.get("emitter").on("join-simulation", function(jsonContent, client){
         height: config.height
     };
     client.get("socket").write(JSON.stringify(response));
-    
+
     webSocketServer.emitBroadcast("simulation-list", { serverList: simulationManager.getSimulationList()});
 });
 
@@ -181,9 +181,9 @@ inputServer.get("emitter").on('player-disconnected', function(client) {
     console.log("++ Notifying other players of disconnect");
     try {
         var response = JSON.stringify({"type": "error", "message": "Player disconnected"});
-        
+
         var simulation = simulationManager.getSimulationForClient(client);
-        
+
         if(simulation) {
             simulationManager.removeSimulation(simulation);
             console.log("++ Disconnecting: %s (%s,%s)", client.get("clientName"), simulation.get("player1").get("client").get("clientName"), simulation.get("player2").get("client").get("clientName"));
