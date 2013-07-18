@@ -24,8 +24,11 @@ p, h2, li { color: #FFF; }
     margin-bottom: 25px;
 }
 
-#container {
+#game {
     display: none;
+}
+
+#container {
     height: 672px;
     margin: 0 auto;
     width: 672px;

@@ -1,5 +1,5 @@
 app.createGame = function() {
-    $("#container").show();
+    $("#game").show();
 
     app.stage = new Kinetic.Stage({
         container: "container",
@@ -15,32 +15,34 @@ app.createGame = function() {
         });
         app.socket.emit("watch-request", {id: app.gameId});*/
         
-        
-        var firstTurn = true;
-        var turn = 0;
-
         app.socket.on('turn', function (data) {
-            turn++;
-
-            setTimeout(function(){
-                console.log(data);
-                app.turn = data;
-
-                if(firstTurn) {
-                    app.barrel.init();
-                    app.dwarf.init();
-
-                    app.stage.add(app.layer);
-                    firstTurn = false;
-                }else{
-                    app.barrel.move();
-                    app.dwarf.move();
-                }
-            }, turn * 100);
+            app.turns.push(data);
         });
 
         app.play(0);
     });
+
+    //turn every 400ms
+    setInterval(function() {
+        app.processTurn();
+    }, 400);
 };
+
+app.processTurn = function() {
+    if(app.turns.length) {
+        app.turn = app.turns.shift();
+
+        if(app.firstTurn) {
+            app.barrel.init();
+            app.dwarf.init();
+
+            app.stage.add(app.layer);
+            app.firstTurn = false;
+        }else{
+            app.barrel.move();
+            app.dwarf.move();
+        }
+    }
+}
 
 app.config.init();
