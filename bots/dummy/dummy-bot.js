@@ -141,6 +141,8 @@ server.on("data", function(data) {
     } else if(message["type"] == "ready") {
         simulationId = message["simulationId"];
         joinSimulation();
+    } else if(message["type"] == "score") {
+        console.log("SCORE");
     } else if(message["type"] == "error" && message["message"] == "Player disconnected") {
         console.log("DISCONNECTED");
     } else if(message["type"] == "error" && message["message"] == "Wrong simulation ID") {

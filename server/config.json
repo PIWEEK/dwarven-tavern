@@ -5,6 +5,7 @@
     "width": 21,
     "height": 21,
     "botsPerPlayer": 5,
+    "pointsToWin": 3,
 
     "positions": {
         "team1": {
