@@ -8,6 +8,34 @@
 
 > The ancient ritual of the Khan-birr-ha begins. The two clans will risk their honor and their ancestors', defending their clan's beer while they try to take the rival's barrel.
 
+# Table of contents
+
+* [What's this?](#whats-this)
+* [Rules](#rules)
+  * [Basic mechanics](#basic-mechanics)
+  * [Movement](#movement)
+  * [Pushing](#pushing)
+  * [Forbidden zones](#forbidden-zones)
+* [Configure the server](#configure-the-server)
+  * [Configuration file](#configuration-file)
+  * [Installing the server](#installing-the-server)
+  * [Starting the server](#starting-the-server)
+* [How to make a bot](#how-to-make-a-bot)
+  * [Connect to the server](#connect-to-the-server)
+  * [Create and join simulations](#create-and-join-simulations)
+    * [Create simulation](#create-simulation)
+    * [Join simulation](#join-simulation)
+  * [Playing our turns](#playing-our-turns)
+    * [State of the simulation](#state-of-the-simulation)
+      * [Barrels example](#barrels-example)
+      * [Team example](#team-example)
+      * [Complete state example](#complete-state-example)
+    * [Sending a turn](#sending-a-turn)
+    * [End of the game](#end-of-the-game)
+  * [Bot example](#bot-example)
+* [Web visor](#web-visor)
+* [Acknowledgements](#acknowledgements)
+
 # What's this?
 
 Dwarven Tavern is a node-based game played with bots. It consists of a set of rules and a server that provides with a socket interface, a simple protocol and a web visor.
