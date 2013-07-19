@@ -1,1 +1,1 @@
-app.config.init();
+app.config.initialize();

@@ -1,41 +1,48 @@
 "use strict";
 
-app.config = {};
+app.config = (function () {
+    var viewGames = $("#games");
+    var host = window.location.href;
 
-app.config.init = function(){
-    app.config.ip = window.location.href;
-    var socketLibary = app.config.createSocket();
-    
-    socketLibary.done(function(){
-        app.config.gameListScreen();
-    });
-};
-
-app.config.createSocket = function() {
-    var head = document.getElementsByTagName('head')[0];
-    var oScript = document.createElement('script');
-    oScript.type = 'text/javascript';
-    oScript.src = /*"http://" +*/ app.config.ip + "socket.io/socket.io.js";
-    console.log("SRC>> " + oScript.src);
-    oScript.onload = function(){
-        app.socket = io.connect(/*'http://'+*/ app.config.ip);
-        promise.resolve();
+    var initialize = function() {
+        var socketLibary = createSocket();
+        
+        socketLibary.done(function(){
+            gameListScreen();
+        });
     };
 
-    head.appendChild(oScript);
+    var createSocket = function() {
+        var head = document.getElementsByTagName('head')[0];
+        var oScript = document.createElement('script');
 
-    var promise = $.Deferred();
+        oScript.type = 'text/javascript';
+        oScript.src = host + "socket.io/socket.io.js";
 
-    return promise;
-};
+        oScript.onload = function(){
+            app.socket = io.connect(host);
+            promise.resolve();
+        };
 
-app.config.gameListScreen = function() {
-    var view = $("#games");
+        head.appendChild(oScript);
 
-    app.socket.on("simulation-list", function(data){
+        var promise = $.Deferred();
+
+        return promise;
+    };
+
+    var gameListScreen = function() {
+        app.socket.on("simulation-list", printSimulationList);
+
+        viewGames.find("button").on("click", app.gameEngine.requestCreateSimulation);
+
+        app.socket.emit("request-simulation-list");
+    };
+
+    var printSimulationList = function(data) {
         var html = "";
 
-        view.show();
+        viewGames.show();
 
         for(var i = 0; i < data.serverList.length; i++) {
             html += "<li>" + data.serverList[i].simulationId +
@@ -48,35 +55,36 @@ app.config.gameListScreen = function() {
             html += "</li>";
         }
 
-        view.find("ul").html(html);
-        view.find(".watch").on("click", app.config.watch);
-    });
+        viewGames.find("ul").html(html);
+        viewGames.find(".watch").on("click", watch);
+    };
 
-    view.find("button").on("click", app.gameEngine.requestCreateSimulation);
+    var ipScreen = function() {
+        $("#ip").show();
 
-    app.socket.emit("request-simulation-list");
-};
+        $("#submit-ip").on("click", function(){
+            $("#ip").hide();
 
-app.config.ipScreen = function(){
-    $("#ip").show();
+            host = $("#ip-address").val();
+            var socketLibary = createSocket();
 
-    $("#submit-ip").on("click", function(){
-        $("#ip").hide();
-
-        app.config.ip = $("#ip-address").val();
-        var socketLibary = app.config.createSocket();
-
-        socketLibary.done(function(){
-            app.config.gameListScreen();
+            socketLibary.done(function(){
+                gameListScreen();
+            });
         });
-    });
-};
+    };
 
-app.config.watch = function(e) {
-    app.gameId = $(e.currentTarget).data("id");
-    $("#games").remove();
-    app.gameEngine.create();
-};
+    var watch = function(e) {
+        app.gameId = $(e.currentTarget).data("id");
+        $("#games").remove();
+        app.gameEngine.create();
+    };
+
+    return {
+        initialize: initialize
+    };
+})();
+
 
 var keys = [];
 $(window).on("keydown", function(e){
