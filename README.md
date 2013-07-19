@@ -36,15 +36,13 @@ If a dwarf pushes a barrel, the barrel will move one square in the direction of 
 
 If one dwarf pushes another, the pushed dwarf will be thrown back with a random pattern. When a dwarf is thrown back, it will move two squares back, one back and one left or one back and one right.
 
-![Dwarf Hit Barrel](https://raw.github.com/PIWEEK/dwarven-tavern/master/client/imgs/rule2.png)
+![Dwarf Hit Dwarf](https://raw.github.com/PIWEEK/dwarven-tavern/master/client/imgs/rule3.png)
 
 If there is another dwarf blocking the way, the barrel will thrown him back following the same rules described above. If there is another dwarf behind the thrown one, it will be thrown too, and so on.
 
+![Dwarf Hit Barrel](https://raw.github.com/PIWEEK/dwarven-tavern/master/client/imgs/rule2.png)
+
 A dwarf can't push a barrel into another barrel, so if it tries to, the movement will be considered wasted.
-
-The dwarves can push around other dwarves, the same rules applies as if a barrel hits the dwarf.
-
-![Dwarf Hit Dwarf](https://raw.github.com/PIWEEK/dwarven-tavern/master/client/imgs/rule3.png)
 
 ## Forbidden zones
 
