@@ -23,70 +23,75 @@ app.barrel = (function () {
         });
     };
 
-    var initBarrelTeam1 = function(){
-        var barrel = app.turn.state.barrels.team1.coords;
-
-        barrelTeam1.sprite = createBarrelSprite(barrel.x, barrel.y, app.img.barrelteam1);
+    var initBarrel = function(team, barrelCoords, image) {
+        team.sprite = createBarrelSprite(barrelCoords.x, barrelCoords.y, image);
         
-        app.layer.add(barrelTeam1.sprite);
+        app.layer.add(team.sprite);
 
-        barrelTeam1.sprite.start();
+        team.sprite.start();
     };
 
-    var initBarrelTeam2 = function(){
-        var barrel = app.turn.state.barrels.team2.coords;
+    var initBarrelTeam1 = function() {
+        if (app.turn.state.barrels.team1 && !barrelTeam1.sprite) {
+            initBarrel(barrelTeam1, app.turn.state.barrels.team1.coords, app.img.barrelteam1);
+        }
+    };
 
-        barrelTeam2.sprite = createBarrelSprite(barrel.x, barrel.y, app.img.barrelteam2);
-        
-        app.layer.add(barrelTeam2.sprite);
-        barrelTeam2.sprite.start();
+    var initBarrelTeam2 = function() {
+        if (app.turn.state.barrels.team2 && !barrelTeam2.sprite) {
+            initBarrel(barrelTeam2, app.turn.state.barrels.team2.coords, app.img.barrelteam2);
+        }
     }
 
-    var initBarrels = function(){
-        if (app.turn.state.barrels.team1 && !barrelTeam1.sprite) {
-            initBarrelTeam1();
-        }
+    var initBarrels = function() {
+        initBarrelTeam1();    
+        initBarrelTeam2();
+    };
 
-        if (app.turn.state.barrels.team2 && !barrelTeam2.sprite) {
-            initBarrelTeam2();
+    var barrelOrientation = function(newPosition, oldPosition) {
+        if(oldPosition.x !== newPosition.x) {
+            return "vertical";
+        }else if(oldPosition.y !== newPosition.y) {
+            return "horizontal";
         }
     };
 
-    var moveBarrel = function(position, barrel){
-        if(barrel.x !== position.x) {
-            barrel.sprite.setAnimation("vertical");
-        }else if(barrel.y !== position.y) {
-            barrel.sprite.setAnimation("horizontal");
-        }
+    var updateTeamPosition = function(team, x, y) {
+        team.x = x;
+        team.y = y;
+    };
 
-        var newPosition = app.grid.getXYGrid(position.x, position.y);
-
+    var createTween = function(sprite, x, y) {
         var tween = new Kinetic.Tween({
-            node: barrel.sprite, 
+            node: sprite, 
             duration: 0.3,
-            x: newPosition.x,
-            y: newPosition.y
+            x: x,
+            y: y
         });
 
         tween.play();
+    };
+
+    var moveBarrel = function(position, barrel) {
+        var orientation = barrelOrientation(position, barrel);
+        var newPosition = app.grid.getXYGrid(position.x, position.y);
+        
+        barrel.sprite.setAnimation(orientation);
+        createTween(barrel.sprite, newPosition.x, newPosition.y);
     };
 
     var moveTeam1Barrels = function(){
         var barrel = app.turn.state.barrels.team1.coords;
 
         moveBarrel(barrel, barrelTeam1);
-        
-        barrelTeam1.x = barrel.x;
-        barrelTeam1.y = barrel.y;
+        updateTeamPosition(barrelTeam1, barrel.x, barrel.y);
     };
 
     var moveTeam2Barrels = function(){
         var barrel = app.turn.state.barrels.team2.coords;
 
         moveBarrel(barrel, barrelTeam2);
-        
-        barrelTeam2.x = barrel.x;
-        barrelTeam2.y = barrel.y;
+        updateTeamPosition(barrelTeam2, barrel.x, barrel.y);
     }
 
     var moveBarrels = function(){
