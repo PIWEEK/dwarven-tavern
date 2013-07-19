@@ -37,7 +37,6 @@ app.dwarf = (function () {
 
     var printDwarf = function(id, xGrid, yGrid, direction, image) {
         var position = app.grid.getXYGrid(xGrid, yGrid);
-
         var dwarf = {"id": id};
 
         dwarf.sprite = new Kinetic.Sprite({
@@ -49,9 +48,7 @@ app.dwarf = (function () {
         });
 
         dwarfs.push(dwarf);
-
         app.layer.add(dwarf.sprite);
-
         dwarf.sprite.start();
     };
 
@@ -72,70 +69,92 @@ app.dwarf = (function () {
     }
 
     var initTeam1 =  function() {
-        var dwarfsTeam1 =  app.turn.state.team1;
+        if(app.turn.state.team1 && !team1Loaded) {
+            var dwarfsTeam1 =  app.turn.state.team1;
 
-        initTeam(dwarfsTeam1, "top", app.img.team1);
+            initTeam(dwarfsTeam1, "top", app.img.team1);
 
-        app.history.team1 = dwarfsTeam1;
-        team1Loaded = true;
+            app.history.team1 = dwarfsTeam1;
+            team1Loaded = true;
+        }
     };
 
     var initTeam2 = function() {
-        var dwarfsTeam2 = app.turn.state.team2;
+        if(app.turn.state.team2 && !team2Loaded) {
+            var dwarfsTeam2 = app.turn.state.team2;
 
-        initTeam(dwarfsTeam2, "bottom", app.img.team2);
+            initTeam(dwarfsTeam2, "bottom", app.img.team2);
 
-        app.history.team2 = dwarfsTeam2;
-        team2Loaded = true;
+            app.history.team2 = dwarfsTeam2;
+            team2Loaded = true;
+        }
     };
 
-    var moveDward = function(dwarfNew, direction) {
-        var dwarf = searchDwarf(dwarfNew.id);
-
-        dwarf.sprite.setAnimation("walk" + direction);;
-
-        var newPosition = app.grid.getXYGrid(dwarfNew.coords.x, dwarfNew.coords.y);
+    var createTween = function(sprite, x, y, direction) {
+        sprite.setAnimation("walk" + direction);
 
         var tween = new Kinetic.Tween({
-            node: dwarf.sprite,
+            node: sprite,
             duration: 0.3,
-            x: newPosition.x,
-            y: newPosition.y,
+            x: x,
+            y: y,
             onFinish: function() {
-                dwarf.sprite.setAnimation(direction);
+                sprite.setAnimation(direction);
             }
         });
 
         tween.play();
     };
 
+    var moveDward = function(dwarfNew, direction) {
+        var dwarf = searchDwarf(dwarfNew.id);
+        var newPosition = app.grid.getXYGrid(dwarfNew.coords.x, dwarfNew.coords.y);
+     
+        createTween(dwarf.sprite, newPosition.x, newPosition.y, direction);
+    };
+
+    var orientationDwarf = function(newPosition, oldPosition) {
+        if(newPosition.x !== oldPosition.x) {
+            if(oldPosition.x > newPosition.x) {
+                return "left";
+            } else {
+                return "right";
+            }
+        }else if (newPosition.y !== oldPosition.y) {
+            if(oldPosition.y > newPosition.y) {
+                return "top";
+            } else if(oldPosition.y < newPosition.y) {
+                return "bottom";
+            }
+        }
+
+        return false;
+    };
+
     var updateDwarf = function(dwarf, teamHistory) {
+        var orientation = null;
+
         for(var z = 0; z < teamHistory.length; z++) {
             if(dwarf.id === teamHistory[z].id) {
-                if(dwarf.coords.x !== teamHistory[z].coords.x){
-                    if(teamHistory[z].coords.x > dwarf.coords.x) {
-                        moveDward(dwarf, "left");
-                    }else {
-                        moveDward(dwarf, "right");
-                    }
-                }else if (dwarf.coords.y !== teamHistory[z].coords.y){
-                    if(teamHistory[z].coords.y > dwarf.coords.y) {
-                        moveDward(dwarf, "top");
-                    }else if(teamHistory[z].coords.y < dwarf.coords.y) {
-                        moveDward(dwarf, "bottom");
-                    }
+                orientation = orientationDwarf(dwarf.coords, teamHistory[z].coords);
+
+                if(orientation) {
+                    moveDward(dwarf, orientation);
                 }
             }
+        }
+    };
+
+    var moveTeam = function(team, teamHistory) {
+        for(var i = 0; i < team.length; i++) {
+            updateDwarf(team[i], teamHistory);
         }
     };
 
     var moveTeam1 = function() {
         var dwarfsTeam1 = app.turn.state.team1;
 
-        for(var i = 0; i < dwarfsTeam1.length; i++) {
-            updateDwarf(dwarfsTeam1[i], app.history.team1);
-        }
-
+        moveTeam(dwarfsTeam1, app.history.team1);
         app.history.team1 = dwarfsTeam1;
     };
 
@@ -143,21 +162,13 @@ app.dwarf = (function () {
     var moveTeam2 = function() {
         var dwarfsTeam2 = app.turn.state.team2;
 
-        for(var i = 0; i < dwarfsTeam2.length; i++) {
-            updateDwarf(dwarfsTeam2[i], app.history.team2);
-        }
-
+        moveTeam(dwarfsTeam2, app.history.team2);
         app.history.team2 = dwarfsTeam2;
     };
 
     var initDwarfs = function() {
-        if(app.turn.state.team1 && !team1Loaded) {
-            initTeam1();
-        }
-        
-        if(app.turn.state.team2 && !team2Loaded) {
-            initTeam2();
-        }
+        initTeam1();
+        initTeam2();
     };
 
     var moveDwarfs = function() {
