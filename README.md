@@ -120,11 +120,11 @@ We can join a simulation knowing it's ID or join a random simulation that accept
     "nick": "John Doe",
     "simulationId": "64lfbem",
     "names": [
-        "Carawebo",
-        "Pantuflo",
-        "Chistaburras",
-        "Pontato",
-        "Jhonny Tablas"
+        "Rhun Diamondfighter",
+        "Balgairen Marble-Flame",
+        "Tavio Bluefeldspar",
+        "Caith Scarletjasper",
+        "Riagan Rubygold"
     ]
 }
 
@@ -172,12 +172,12 @@ The server's message has the following attributes:
 ```
 
 #### Team example
-
+        
 ```javascript
 "team1": [
     {
         "id": 1,
-        "name": "Carawebo",
+        "name": "Rhun Diamondfighter",
         "coords": {
             "x": 8,
             "y": 7
@@ -185,7 +185,7 @@ The server's message has the following attributes:
     },
     {
         "id": 2,
-        "name": "Pantuflo",
+        "name": "Balgairen Marble-Flame",
         "coords": {
             "x": 6,
             "y": 9
@@ -193,7 +193,7 @@ The server's message has the following attributes:
     },
     {
         "id": 3,
-        "name": "Chistaburras",
+        "name": "Tavio Bluefeldspar",
         "coords": {
             "x": 7,
             "y": 8
@@ -201,7 +201,7 @@ The server's message has the following attributes:
     },
     {
         "id": 4,
-        "name": "Pontato",
+        "name": "Caith Scarletjasper",
         "coords": {
             "x": 10,
             "y": 8
@@ -209,7 +209,7 @@ The server's message has the following attributes:
     },
     {
         "id": 5,
-        "name": "Jhonny Tablas",
+        "name": "Riagan Rubygold",
         "coords": {
             "x": 15,
             "y": 8
@@ -243,7 +243,7 @@ A complete message looks like this.
         "team1": [
             {
                 "id": 1,
-                "name": "Carawebo",
+                "name": "Rhun Diamondfighter",
                 "coords": {
                     "x": 8,
                     "y": 7
@@ -251,7 +251,7 @@ A complete message looks like this.
             }
             {
                 "id": 2,
-                "name": "Pantuflo",
+                "name": "Balgairen Marble-Flame",
                 "coords": {
                     "x": 6,
                     "y": 9
@@ -259,7 +259,7 @@ A complete message looks like this.
             },
             {
                 "id": 3,
-                "name": "Chistaburras",
+                "name": "Tavio Bluefeldspar",
                 "coords": {
                     "x": 7,
                     "y": 8
@@ -267,7 +267,7 @@ A complete message looks like this.
             },
             {
                 "id": 4,
-                "name": "Pontato",
+                "name": "Caith Scarletjasper",
                 "coords": {
                     "x": 10,
                     "y": 8
@@ -275,7 +275,7 @@ A complete message looks like this.
             },
             {
                 "id": 5,
-                "name": "Jhonny Tablas",
+                "name": "Riagan Rubygold",
                 "coords": {
                     "x": 15,
                     "y": 8
@@ -285,7 +285,7 @@ A complete message looks like this.
         "team2": [
             {
                 "id": 6,
-                "name": "Carawebo",
+                "name": "Anwas Marble-Track",
                 "coords": {
                     "x": 5,
                     "y": 11
@@ -293,7 +293,7 @@ A complete message looks like this.
             },
             {
                 "id": 7,
-                "name": "Pantuflo",
+                "name": "Kieran Forge-Ash",
                 "coords": {
                     "x": 8,
                     "y": 11
@@ -301,7 +301,7 @@ A complete message looks like this.
             },
             {
                 "id": 8,
-                "name": "Chistaburras",
+                "name": "Aproderick Moon-Fist",
                 "coords": {
                     "x": 8,
                     "y": 10
@@ -309,7 +309,7 @@ A complete message looks like this.
             },
             {
                 "id": 9,
-                "name": "Pontato",
+                "name": "Dunmore Slatetapper",
                 "coords": {
                     "x": 11,
                     "y": 10
@@ -317,7 +317,7 @@ A complete message looks like this.
             },
             {
                 "id": 10,
-                "name": "Jhonny Tablas",
+                "name": "Patrick Topazchipper",
                 "coords": {
                     "x": 13,
                     "y": 11
@@ -375,6 +375,7 @@ A lot of the game resources are from the interwebs, thank you too!
 
 * Sprites & game background: http://vxresource.wordpress.com/about/
 * Dwarf voices: http://opengameart.org/content/drunk-dwarf-voice-pack
+* You can get some AWESOME dwarf names here: http://dwarf.namegeneratorfun.com/
 * Fonts: http://www.dafont.com/dwarven-stonecraft.font
 * Openclipart: http://openclipart.org/media/people/liftarn
 * Background: google search image without copyright info nor references. Thank you anonymous fella!
