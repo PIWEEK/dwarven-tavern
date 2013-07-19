@@ -175,9 +175,9 @@ When it's our turn, the server will send our bot the complete state of the simul
 ### State of the simulation
 
 The server's message has the following attributes:
-* `type`: it can be **turn**, **loss-game** and **win-game**, depending on the state of the game and if we lost or won.
-* `state`: an object containing the state of the game, resulting from the others player last movement.
-* `state.barrels`: both two barrels and their positions inside the tavern.
+* `type`: it can be **turn**, **loss-game** and **win-game**, depending on the state of the game and if we lost or won (this logic is explained in the [End of the game](https://github.com/PIWEEK/dwarven-tavern#end-of-the-game) section).
+* `state`: an object containing the state of the game, resulting from the other player's last movement.
+* `state.barrels`: both barrels and their positions inside the tavern.
 * `state.team1` and `state.team2`: the dwarven's positions of both teams.
 
 #### Barrels example
@@ -200,7 +200,7 @@ The server's message has the following attributes:
 ```
 
 #### Team example
-        
+
 ```javascript
 "team1": [
     {
@@ -248,7 +248,7 @@ The server's message has the following attributes:
 
 #### Complete state example
 
-A complete message looks like this.
+A complete message looks like this:
 
 ```javascript
 {
@@ -358,7 +358,7 @@ A complete message looks like this.
 
 ### Sending a turn
 
-When we finish to calculate our movements, we have to send a response to the server. Our bot's response should look like this:
+When we finish calculating our dwarven movements, we have to send a response to the server. Our bot's response should look like this:
 
 ```javascript
 {
@@ -375,7 +375,7 @@ When we finish to calculate our movements, we have to send a response to the ser
 
 ### End of the game
 
-When the game ends, the server will send us the winner movement as a normal state message with a different type. Instead of `turn`, the type will be `loss-game` if we lost the game, or `win-game` if we won.
+When the game ends, the server will send us the winner movement as a normal state message, but with a different type. Instead of `turn`, the type will be `loss-game` if we lost the game, or `win-game` if we won.
 
 ## Bot example
 
