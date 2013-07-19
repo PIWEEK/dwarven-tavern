@@ -379,17 +379,7 @@ When the game ends, the server will send us the winner movement as a normal stat
 
 ## Bot example
 
-There is a bot example in [`bots/dummy/dummy-bot.js`](https://github.com/PIWEEK/dwarven-tavern/blob/master/bots/dummy/dummy-bot.js). To use it, in the `bots/dummy` directory, execute:
-
-```bash
-npm install
-```
-
-To use the bot, run it from the command line (you can pass a simulationId to the bot or it will connect to the first one that accepts new players):
-
-```bash
-node dummy-bot.js 64lfbem
-```
+There is a bot example in [`bots/dummy`](https://github.com/PIWEEK/dwarven-tavern/blob/master/bots/dummy).
 
 # Web visor
 
