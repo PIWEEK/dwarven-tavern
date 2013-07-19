@@ -4,7 +4,7 @@
 
 > In the Kal-eij-dhor tavern, two dwarven clans are about to face a heated argument.
 
-> No one knows exactly what is the problem... but everyone know that there is only one way to solve it.
+> No one knows exactly what the problem is... but everyone know that there is only one way to solve it.
 
 > The ancient ritual of the Khan-birr-ha begins. The two clans will risk their honor and their ancestors', defending their clan's beer while they try to take the rival's barrel.
 
@@ -30,11 +30,21 @@ Each dwarf can move in four directions, **NORTH**, **EAST**, **SOUTH** and **WES
 
 A dwarf can push a barrel or another dwarf. No matter what it pushes, if the destiny square it's free at the end of the movement, the dwarf will move into it.
 
+If a dwarf pushes a barrel, the barrel will move one square in the direction of the push.
+
+![Dwarf Push Barrel](https://raw.github.com/PIWEEK/dwarven-tavern/master/client/imgs/rule1.png)
+
 If one dwarf pushes another, the pushed dwarf will be thrown back with a random pattern. When a dwarf is thrown back, it will move two squares back, one back and one left or one back and one right.
 
-If a dwarf pushes a barrel, the barrel will move one square in the direction of the push. If there is another dwarf blocking the way, the barrel will thrown him back following the same rules described above. If there is another dwarf behind the thrown one, it will be thrown too, and so on.
+![Dwarf Hit Barrel](https://raw.github.com/PIWEEK/dwarven-tavern/master/client/imgs/rule2.png)
+
+If there is another dwarf blocking the way, the barrel will thrown him back following the same rules described above. If there is another dwarf behind the thrown one, it will be thrown too, and so on.
 
 A dwarf can't push a barrel into another barrel, so if it tries to, the movement will be considered wasted.
+
+The dwarves can push around other dwarves, the same rules applies as if a barrel hits the dwarf.
+
+![Dwarf Hit Dwarf](https://raw.github.com/PIWEEK/dwarven-tavern/master/client/imgs/rule3.png)
 
 ## Forbidden zones
 
