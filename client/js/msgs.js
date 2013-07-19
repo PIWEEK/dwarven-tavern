@@ -1,3 +1,5 @@
+"use strict";
+
 app.msgs = (function () {
     var soundsEnabled = true;
 

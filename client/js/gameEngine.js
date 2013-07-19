@@ -110,7 +110,6 @@ app.gameEngine = (function() {
             app.barrel.init();
             app.dwarf.init();
             app.msgs.update();
-
             app.stage.add(app.layer);
             firstTurn = false;
         }else{
