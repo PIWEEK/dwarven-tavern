@@ -4,7 +4,7 @@
 
 > In the Kal-eij-dhor tavern, two dwarven clans are about to face a heated argument.
 
-> No one knows exactly what is the problem... but everyone know that there is only one way to solve it.
+> No one knows exactly what the problem is... but everyone know that there is only one way to solve it.
 
 > The ancient ritual of the Khan-birr-ha begins. The two clans will risk their honor and their ancestors', defending their clan's beer while they try to take the rival's barrel.
 
@@ -20,7 +20,7 @@ In Dwarven Tavern, the dwarves have to drink all the beer they can. The first te
 
 ## Basic mechanics
 
-At the begining of each turn, the server sends the position of the dwarves and the barrels to the next active player. The player should send the movements of its dwarves in return and then, the server will calculate the result and it will send it to the other player. Each dwarf moves one square per turn.
+At the begining of each turn, the server sends the position of the dwarves and the barrels to the next active player. The player should send the movements of its dwarves in return and then, the server will calculate the result and send it to the other player. Each dwarf moves one square per turn.
 
 ## Movement
 
@@ -30,9 +30,17 @@ Each dwarf can move in four directions, **NORTH**, **EAST**, **SOUTH** and **WES
 
 A dwarf can push a barrel or another dwarf. No matter what it pushes, if the destiny square it's free at the end of the movement, the dwarf will move into it.
 
+If a dwarf pushes a barrel, the barrel will move one square in the direction of the push.
+
+![Dwarf Push Barrel](https://raw.github.com/PIWEEK/dwarven-tavern/master/client/imgs/rule1.png)
+
 If one dwarf pushes another, the pushed dwarf will be thrown back with a random pattern. When a dwarf is thrown back, it will move two squares back, one back and one left or one back and one right.
 
-If a dwarf pushes a barrel, the barrel will move one square in the direction of the push. If there is another dwarf blocking the way, the barrel will thrown him back following the same rules described above. If there is another dwarf behind the thrown one, it will be thrown too, and so on.
+![Dwarf Hit Dwarf](https://raw.github.com/PIWEEK/dwarven-tavern/master/client/imgs/rule3.png)
+
+If there is another dwarf blocking the way, the barrel will thrown him back following the same rules described above. If there is another dwarf behind the thrown one, it will be thrown too, and so on.
+
+![Dwarf Hit Barrel](https://raw.github.com/PIWEEK/dwarven-tavern/master/client/imgs/rule2.png)
 
 A dwarf can't push a barrel into another barrel, so if it tries to, the movement will be considered wasted.
 
@@ -149,14 +157,12 @@ The server's message has the following attributes:
 ```javascript
 "barrels": {
     "team1": {
-        "team": "team1",
         "coords": {
             "x": 8,
             "y": 9
         }
     },
     "team2": {
-        "team": "team2",
         "coords": {
             "x": 11,
             "y": 9
@@ -175,8 +181,7 @@ The server's message has the following attributes:
         "coords": {
             "x": 8,
             "y": 7
-        },
-        "team": "team1"
+        }
     },
     {
         "id": 2,
@@ -184,8 +189,7 @@ The server's message has the following attributes:
         "coords": {
             "x": 6,
             "y": 9
-        },
-        "team": "team1"
+        }
     },
     {
         "id": 3,
@@ -193,8 +197,7 @@ The server's message has the following attributes:
         "coords": {
             "x": 7,
             "y": 8
-        },
-        "team": "team1"
+        }
     },
     {
         "id": 4,
@@ -202,8 +205,7 @@ The server's message has the following attributes:
         "coords": {
             "x": 10,
             "y": 8
-        },
-        "team": "team1"
+        }
     },
     {
         "id": 5,
@@ -211,8 +213,7 @@ The server's message has the following attributes:
         "coords": {
             "x": 15,
             "y": 8
-        },
-        "team": "team1"
+        }
     }
 ]
 ```
@@ -227,14 +228,12 @@ A complete message looks like this.
     "state": {
         "barrels": {
             "team1": {
-                "team": "team1",
                 "coords": {
                     "x": 8,
                     "y": 9
                 }
             },
             "team2": {
-                "team": "team2",
                 "coords": {
                     "x": 11,
                     "y": 9
@@ -249,16 +248,14 @@ A complete message looks like this.
                     "x": 8,
                     "y": 7
                 },
-                "team": "team1"
-            },
+            }
             {
                 "id": 2,
                 "name": "Pantuflo",
                 "coords": {
                     "x": 6,
                     "y": 9
-                },
-                "team": "team1"
+                }
             },
             {
                 "id": 3,
@@ -266,8 +263,7 @@ A complete message looks like this.
                 "coords": {
                     "x": 7,
                     "y": 8
-                },
-                "team": "team1"
+                }
             },
             {
                 "id": 4,
@@ -275,8 +271,7 @@ A complete message looks like this.
                 "coords": {
                     "x": 10,
                     "y": 8
-                },
-                "team": "team1"
+                }
             },
             {
                 "id": 5,
@@ -284,8 +279,7 @@ A complete message looks like this.
                 "coords": {
                     "x": 15,
                     "y": 8
-                },
-                "team": "team1"
+                }
             }
         ],
         "team2": [
@@ -295,8 +289,7 @@ A complete message looks like this.
                 "coords": {
                     "x": 5,
                     "y": 11
-                },
-                "team": "team2"
+                }
             },
             {
                 "id": 7,
@@ -304,8 +297,7 @@ A complete message looks like this.
                 "coords": {
                     "x": 8,
                     "y": 11
-                },
-                "team": "team2"
+                }
             },
             {
                 "id": 8,
@@ -313,8 +305,7 @@ A complete message looks like this.
                 "coords": {
                     "x": 8,
                     "y": 10
-                },
-                "team": "team2"
+                }
             },
             {
                 "id": 9,
@@ -322,8 +313,7 @@ A complete message looks like this.
                 "coords": {
                     "x": 11,
                     "y": 10
-                },
-                "team": "team2"
+                }
             },
             {
                 "id": 10,
@@ -331,8 +321,7 @@ A complete message looks like this.
                 "coords": {
                     "x": 13,
                     "y": 11
-                },
-                "team": "team2"
+                }
             }
         ]
     }

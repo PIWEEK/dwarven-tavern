@@ -181,7 +181,11 @@ var Simulation = Backbone.Model.extend({
             if(!result[team]) {
                 result[team] = [];
             }
-            result[team].push(botData);
+            result[team].push({
+                id: botData.get("id"),
+                name: botData.get("name"),
+                coords: botData.get("coords")
+            });
         });
         
         return result;
@@ -265,8 +269,6 @@ var Simulation = Backbone.Model.extend({
         }
         
         this.addTurnEvent({type: SimulationEventType.BOT_MOVE, message: botData.get("name") + " moves toward " + direction});
-        
-        // TODO: We should check conflicts
         
         // We empty the old grid data
         grid[oldCoords.y][oldCoords.x] = { 
