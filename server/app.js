@@ -36,7 +36,7 @@ simulationManager.get("emitter").on("simulation-ready", function(simulation){
     }, simulation.get("id"));
 
     var response = JSON.stringify({ type: "turn", state: simulation.getCurrentState()});
-    simulation.get("player1").get("client").get("socket").write(response);
+    simulation.get("player1").get("client").get("socket").write(response + "\n");
 });
 
 webSocketServer.get("emitter").on("simulation-initial-status", function(simulationId, socket) {
@@ -63,7 +63,7 @@ simulationManager.get("emitter").on("team1-turn", function(simulation){
     webSocketServer.emitRoom("turn", { type: "turn", messages: simulation.getTurnEvents(), state: simulation.getCurrentState()}, simulation.get("id"));
 
     var response = JSON.stringify({ type: "turn", state: simulation.getCurrentState()});
-    simulation.get("player2").get("client").get("socket").write(response);
+    simulation.get("player2").get("client").get("socket").write(response + "\n");
 });
 
 simulationManager.get("emitter").on("team2-turn", function(simulation){
@@ -75,7 +75,7 @@ simulationManager.get("emitter").on("team2-turn", function(simulation){
     webSocketServer.emitRoom("turn", { type: "turn", messages: simulation.getTurnEvents(), state: simulation.getCurrentState()}, simulation.get("id"));
 
     var response = JSON.stringify({ type: "turn", state: simulation.getCurrentState()});
-    simulation.get("player1").get("client").get("socket").write(response);
+    simulation.get("player1").get("client").get("socket").write(response + "\n");
 });
 
 simulationManager.get("emitter").on("new-turn", function(simulation, playerToPlay){
@@ -87,15 +87,15 @@ simulationManager.get("emitter").on("new-turn", function(simulation, playerToPla
     webSocketServer.emitRoom("turn", { type: "turn", messages: simulation.getTurnEvents(), state: simulation.getCurrentState()}, simulation.get("id"));
 
     var response = JSON.stringify({ type: "turn", state: simulation.getCurrentState()});
-    simulation.get(playerToPlay).get("client").get("socket").write(response);
+    simulation.get(playerToPlay).get("client").get("socket").write(response + "\n");
 });
 
 
 simulationManager.get("emitter").on("player-score", function(simulation, team){
     var message = { type: "score", team: team };
     
-    simulation.get("player1").get("client").get("socket").write(JSON.stringify(message));
-    simulation.get("player2").get("client").get("socket").write(JSON.stringify(message));
+    simulation.get("player1").get("client").get("socket").write(JSON.stringify(message) + "\n");
+    simulation.get("player2").get("client").get("socket").write(JSON.stringify(message) + "\n");
 
     webSocketServer.emitRoom("turn", { type: "turn", messages: simulation.getTurnEvents(), state: simulation.getCurrentState()}, simulation.get("id"));
     webSocketServer.emitRoom("player-score", { type: "player-score", team: team }, simulation.get("id"));
@@ -109,8 +109,8 @@ simulationManager.get("emitter").on("end-game", function(simulation){
     var responseWin = JSON.stringify({ type: "win-game", state: simulation.getCurrentState()});
     var responseLoss = JSON.stringify({ type: "loss-game", state: simulation.getCurrentState()});
 
-    simulation.get("winner").get("client").get("socket").write(responseWin);
-    simulation.get("loser").get("client").get("socket").write(responseLoss);
+    simulation.get("winner").get("client").get("socket").write(responseWin + "\n");
+    simulation.get("loser").get("client").get("socket").write(responseLoss + "\n");
 
     simulation.get("winner").get("client").get("socket").end();
     simulation.get("loser").get("client").get("socket").end();
@@ -133,7 +133,7 @@ inputServer.get("emitter").on("create-simulation", function(jsonContent, client)
     console.log("++ Simulation create");
     var simulationID = simulationManager.createSimulation();
     var response = '{"type": "ready", "simulationId": "' + simulationID + '" }\n';
-    client.get("socket").write(response);
+    client.get("socket").write(response + "\n");
     console.log("++ Simulation create OK");
     webSocketServer.emitBroadcast("simulation-list", { serverList: simulationManager.getSimulationList()});
 });
@@ -159,7 +159,7 @@ inputServer.get("emitter").on("join-simulation", function(jsonContent, client){
     else if(simulationManager.hasSimulation(jsonContent.simulationId)) {
         simulation = simulationManager.joinSimulation(jsonContent.simulationId, playerData);
     } else {
-        client.get("socket").write(JSON.stringify({"type": "error", "message": "Wrong simulation ID"}));
+        client.get("socket").write(JSON.stringify({"type": "error", "message": "Wrong simulation ID"}) + "\n");
         return;
     }
     console.log("++ Player joined OK");
@@ -174,7 +174,7 @@ inputServer.get("emitter").on("join-simulation", function(jsonContent, client){
         width: config.width,
         height: config.height
     };
-    client.get("socket").write(JSON.stringify(response));
+    client.get("socket").write(JSON.stringify(response) + "\n");
 
     webSocketServer.emitBroadcast("simulation-list", { serverList: simulationManager.getSimulationList()});
 });
@@ -192,7 +192,7 @@ inputServer.get("emitter").on("player-turn", function(jsonContent, client) {
 
 inputServer.get("emitter").on('turn-malformed', function(client) {
     var response = '{"type": "error", "message": "Invalid turn"}\n';
-    client.get("socket").write(response);
+    client.get("socket").write(response + "\n");
 });
 
 inputServer.get("emitter").on('player-disconnected', function(client) {
@@ -207,7 +207,7 @@ inputServer.get("emitter").on('player-disconnected', function(client) {
             console.log("++ Disconnecting: %s (%s,%s)", client.get("clientName"), simulation.get("player1").get("client").get("clientName"), simulation.get("player2").get("client").get("clientName"));
             var clientPlayer1 = simulation.get("player1").get("client");
             if(client.get("clientName") != clientPlayer1.get("clientName")) {
-                clientPlayer1.get("socket").write(response);
+                clientPlayer1.get("socket").write(response + "\n");
                 clientPlayer1.get("socket").end();
             }
             var clientPlayer2 = simulation.get("player2").get("client");
